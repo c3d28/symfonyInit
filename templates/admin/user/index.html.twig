@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container-fluid mt-5">
+
+        <h1>Liste des Utilisateurs </h1>
+        <ul class="list-group">
+            {% for user in users %}
+                <tr>
+                    <li class="list-group-item">{{ user.id }} - {{user.username}} <a href="{{path('admin.user.edit',{id: user.id})}}" class="float-right btn btn-primary">Editer </a> </li>
+                </tr>
+            {% endfor %}
+        </ul>
+    </div>
+
+
+{% endblock %}
