@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Draw {{ draw.id }}{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+
+        <h1 class="mt-5">Draw n°{{ draw.id }} : {{ draw.name }}</h1>
+
+
+        <h2>Liste des participants </h2>
+        <ul class="list-group">
+
+            {% for parti in participants %}
+                <tr>
+                    <li class="list-group-item"> {{ parti.user.username}} </li>
+                </tr>
+            {% endfor %}
+        </ul>
+
+
+    </div>
+{% endblock %}

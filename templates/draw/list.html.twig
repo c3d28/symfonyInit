@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container-fluid mt-5">
+
+        <h1>Liste des tirages au sort    </h1>
+        <ul class="list-group">
+
+            {% for draw in draws %}
+                <tr>
+                    <li class="list-group-item">{{ draw.id }} - {{draw.name}} </li>
+                </tr>
+            {% endfor %}
+        </ul>
+    </div>
+
+
+{% endblock %}

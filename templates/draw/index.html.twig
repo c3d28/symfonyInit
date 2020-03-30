@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Create Draw{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+
+        <h1>Créer un Tirage au sort</h1>
+        {{ form_start(form) }}
+            {{ form_rest(form)}}
+            <button class="btn btn-primary"> Créer </button>
+        {{ form_end(form) }}
+
+
+    </div>
+{% endblock %}
