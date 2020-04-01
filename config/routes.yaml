@@ -8,4 +8,4 @@ home:
 
 login:
     path: /login
-    controller:  App\Controller\SecurityController::loginphp bp
+    controller:  App\Controller\SecurityController::login

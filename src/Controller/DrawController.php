@@ -70,7 +70,7 @@ class DrawController extends AbstractController
     }
 
     /**
-     * @Route("/draw/{id}", name="draw.id")
+     * @Route("/draw/{id}/", name="draw.id")
      * @param EntityManagerInterface $em
      * @param Request $request
      * @param $draws
@@ -98,7 +98,7 @@ class DrawController extends AbstractController
     }
 
     /**
-     * @Route("/draw/new", name="draw.new")
+     * @Route("/draw", name="draw.new")
      * @param EntityManagerInterface $em
      * @param Draw $draw
      * @param Request $request

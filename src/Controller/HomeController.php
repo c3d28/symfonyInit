@@ -18,7 +18,6 @@ class HomeController extends AbstractController
      */
     public function index(EntityManagerInterface $em,UserPasswordEncoderInterface $encoder): Response
     {
-
     	/**
 
         $deal = new Deal();
@@ -32,6 +31,7 @@ class HomeController extends AbstractController
     	$user->setUsername('admin2');
         $plainPassword = 'admin';
         $encoded = $encoder->encodePassword($user, $plainPassword);
+        dump($encoded);
         $user->setPassword($encoded);
         $user->setMail('c5dr9k@gmail.com');
     	$em = $this->getDoctrine()->getManager();
