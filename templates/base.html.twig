@@ -146,14 +146,3 @@
 
     </body>
 </html>
-
-
-
-Uncaught PHP Exception Doctrine\DBAL\Exception\SyntaxErrorException:
-"An exception occurred while executing 'INSERT INTO user (id, username, password, mail) VALUES (?, ?, ?, ?)' with params [1, "c3d28", "$2y$13$LS1BAcQmpTRV2F8HFUqmEe.xa7LoU2LJyUf0Bo2o1yVkSADum3FQ.", "c5dr9k@gmail.com"]:
-SQLSTATE[42601]: Syntax error: 7 ERROR:  syntax error at or near "user" LINE 1: INSERT INTO user (id, username, password, mail) VALUES ($1, ...                     ^" at /app/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/AbstractPostgreSQLDriver.php line 54
-{"exception":"[object] (Doctrine\\DBAL\\Exception\\SyntaxErrorException(code: 0): An exception occurred while executing 'INSERT INTO user (id, username, password, mail) VALUES (?, ?, ?, ?)' with params [1, \"c3d28\", \"$2y$13$LS1BAcQmpTRV2F8HFUqmEe.xa7LoU2LJyUf0Bo2o1yVkSADum3FQ.\", \"c5dr9k@gmail.com\"]:\n\nSQLSTATE[42601]:
-Syntax error: 7 ERROR:  syntax error at or near \"user\"\nLINE 1: INSERT INTO user (id, username, password, mail) VALUES ($1, ...\n                    ^ at /app/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/AbstractPostgreSQLDriver.php:54)\n[previous exception] [object] (Doctrine\\DBAL\\Driver\\PDOException(code: 42601):
-SQLSTATE[42601]: Syntax error: 7 ERROR:  syntax error at or near \"user\"\nLINE 1: INSERT INTO user (id, username, password, mail) VALUES ($1, ...\n                    ^ at /app/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDOStatement.php:123)\n[previous exception]
-[object] (PDOException(code: 42601): SQLSTATE[42601]: Syntax error: 7 ERROR:  syntax error at or near \"user\"\nLINE 1: INSERT INTO user (id, username, password, mail) VALUES ($1, ...\n                    ^ at /app/vendor/doctrine/dbal/lib/Doctrine/DBAL/Driver/PDOStatement.php:121)"} []
-
