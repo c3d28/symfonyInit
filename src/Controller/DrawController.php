@@ -54,9 +54,6 @@ class DrawController extends AbstractController
         foreach ($partipants as $part){
             $listDraw = $part->getDraw()->getId();
         }
-        dump("test");
-
-        dump($listDraw);
 
         //
         $draws = $this->repository->findBy(
@@ -85,11 +82,6 @@ class DrawController extends AbstractController
         $partipants = $this->repoParti->findBy(
             ['draw' => $draw]
         );
-
-        dump($partipants);
-
-
-
             return $this->render('draw/info.html.twig', [
                 'controller_name' => 'DrawController',
                 'draw' => $draw,
