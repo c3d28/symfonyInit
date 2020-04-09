@@ -1,3 +1,7 @@
+header{
+    height:70px;
+}
+
 .carousel-item {
     height: 100vh;
     min-height: 350px;
@@ -6,4 +10,8 @@
     -moz-background-size: cover;
     -o-background-size: cover;
     background-size: cover;
+}
+
+.navbar-brand img{
+    height : 40px;
 }
