@@ -22,7 +22,7 @@ class Draw
     private $name;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="date")
      */
     private $dateCreation;
 
@@ -41,6 +41,11 @@ class Draw
      */
     private $type;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $shareCode;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -58,12 +63,12 @@ class Draw
         return $this;
     }
 
-    public function getDateCreation(): ?string
+    public function getDateCreation(): ?\DateTimeInterface
     {
         return $this->dateCreation;
     }
 
-    public function setDateCreation(string $dateCreation): self
+    public function setDateCreation(\DateTimeInterface $dateCreation): self
     {
         $this->dateCreation = $dateCreation;
 
@@ -102,6 +107,18 @@ class Draw
     public function setType(string $type): self
     {
         $this->type = $type;
+
+        return $this;
+    }
+
+    public function getShareCode(): ?string
+    {
+        return $this->shareCode;
+    }
+
+    public function setShareCode(?string $shareCode): self
+    {
+        $this->shareCode = $shareCode;
 
         return $this;
     }

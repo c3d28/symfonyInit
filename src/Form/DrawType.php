@@ -13,10 +13,11 @@ class DrawType extends AbstractType
     {
         $builder
             ->add('name')
-            ->add('dateCreation')
+            //->add('dateCreation')
             ->add('dateDraw')
             ->add('finished')
             ->add('type')
+            
         ;
     }
 

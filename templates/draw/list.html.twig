@@ -8,14 +8,10 @@
 
             {% for draw in draws %}
                 <tr>
-                    <li class="list-group-item">{{ draw.id }} - {{draw.name}} </li>
+                    <li class="list-group-item">{{ draw.id }} - {{draw.name}} - <a href="{{path('draw.id',{id: draw.id})}}">Voir</a> </li>
                 </tr>
             {% endfor %}
         </ul>
     </div>
-
-
-
-
 
 {% endblock %}

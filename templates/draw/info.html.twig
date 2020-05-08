@@ -8,15 +8,26 @@
         <h1 class="mt-5">Draw n°{{ draw.id }} : {{ draw.name }}</h1>
 
 
-        <h2>Liste des participants </h2>
-        <ul class="list-group">
+        <div>{{ draw.name  }}</div>
 
-            {% for parti in participants %}
-                <tr>
-                    <li class="list-group-item"> {{ parti.user.username}} </li>
-                </tr>
-            {% endfor %}
-        </ul>
+        <br>
+        <div> Date Tirage : {{ draw.dateDraw | date("d/m/Y - H:i:s") }}</div>
+        <div> Code partage: {{ draw.shareCode }}</div>
+
+        <h2>Liste des participants </h2>
+        <div class="">
+            <ul class="list-group">
+
+                {% for parti in participants %}
+                    <tr>
+                        <li class="list-group-item"> {{ parti.user.username}} </li>
+                    </tr>
+                {% endfor %}
+            </ul>
+        </div>
+
+
+
 
 
     </div>

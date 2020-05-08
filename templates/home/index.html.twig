@@ -2,5 +2,30 @@
 
 {% block title %}DrawBox{% endblock %}
 
+
+
 {% block body %}
+
+    <div class="row">
+        <div class="col-md-4"></div>
+        <div class="col-md-2">
+            <div  class="div-home-start">
+                <span  class="btn-home-start">Rejoindre un tirage</span>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="div-home-start">
+                <div>
+                    <span class=" align-middle btn-home-start">Créer un nouveau tirage</span>
+                    <form action="{{ path('draw.join') }}" method="post">
+                        <input type="text" name="code" />
+                        <button type="submit"/>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4"></div>
+
+    </div>
+
 {% endblock %}
