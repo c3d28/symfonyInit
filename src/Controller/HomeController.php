@@ -31,7 +31,6 @@ class HomeController extends AbstractController
     	$user->setUsername('admin2');
         $plainPassword = 'admin';
         $encoded = $encoder->encodePassword($user, $plainPassword);
-        dump($encoded);
         $user->setPassword($encoded);
         $user->setMail('c5dr9k@gmail.com');
     	$em = $this->getDoctrine()->getManager();

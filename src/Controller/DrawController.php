@@ -128,14 +128,12 @@ class DrawController extends AbstractController
      */
     public function joinDraw(EntityManagerInterface $em, Request $request): Response
     {
-        dump($request->request->get('code'));
 
         $draw = $this->repository->findOneBy(
             ['shareCode' => $request->request->get('code')]
         );
 
         if ($draw != null) {
-            dump($draw);
             if ($this->getUser() != null) {
                 $user = $this->getUser();
             } else {
@@ -182,10 +180,6 @@ class DrawController extends AbstractController
         $form = $this->createForm(DrawType::class, $draw);
         $form->handleRequest($request);
         $user = $this->getUser();
-
-        dump($form);
-        dump($request);
-
 
         if ($form->isSubmitted() && $form->isValid()) {
             $draw->setDateCreation(new \DateTime('now'));
@@ -250,8 +244,6 @@ class DrawController extends AbstractController
         $nbParticipant = count($partipants);
         $nbChoice = count($choices);
 
-        dump($nbParticipant);
-        dump($choices);
         if($nbChoice < $nbParticipant){
 
         }else{
@@ -276,10 +268,7 @@ class DrawController extends AbstractController
             }
         }
 
-
-
         $em->flush();
-
 
         return $this->render('home/index.html.twig', [
             'message' => 'OK'
