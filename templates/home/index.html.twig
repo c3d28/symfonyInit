@@ -5,21 +5,34 @@
 
 
 {% block body %}
+    {% if app.user %}
 
-    <div class="row">
-        <div class="col-md-4"></div>
-        <div class="col-md-2">
-            <div  class="div-home-start">
-                <span  class="btn-home-start">Rejoindre un tirage</span>
+    <div class="row" >
+        <div class="col-md-2"></div>
+        <div class="col-md-4">
+            <div  class="div-home-start card justify-content-center">
+                <div class="m-2">
+                    <h2>Créer un tirage</h2>
+                    <div class="mt-12">
+                        <span class="btn-home-start mt-5">
+                            <a class="form-control btn btn-secondary" href="{{ path('draw.new') }}">Créer un tirage</a>
+                        </span>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="col-md-2">
-            <div class="div-home-start">
-                <div>
-                    <span class=" align-middle btn-home-start">Créer un nouveau tirage</span>
+        <div class="col-md-4">
+            <div class="div-home-start card justify-content-center">
+                <div class="m-2">
+                    <h2>Rejoindre un tirage</h2>
                     <form action="{{ path('draw.join') }}" method="post">
-                        <input type="text" name="code" />
-                        <button type="submit"/>
+                        <div class="m-12">
+                            <input class="form-control mb-3" type="text" name="code" placeholder="Entrer le code" />
+                        </div>
+                        <div class="m-12">
+                            <button type="button" class="form-control btn btn-secondary" type="submit">Rejoindre le tirage</button>
+                        </div>
+
                     </form>
                 </div>
             </div>
@@ -27,5 +40,6 @@
         <div class="col-md-4"></div>
 
     </div>
+    {% endif %}
 
 {% endblock %}

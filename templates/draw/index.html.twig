@@ -8,7 +8,10 @@
         <h1>Créer un Tirage au sort</h1>
         {{ form_start(form) }}
             {{ form_rest(form)}}
-            <button class="btn btn-primary"> Créer </button>
+            <label for="choice1">choix possible :</label>
+            <input type="text"  name="choices" data-role="tagsinput">
+
+        <button class="btn btn-primary"> Créer </button>
         {{ form_end(form) }}
 
 

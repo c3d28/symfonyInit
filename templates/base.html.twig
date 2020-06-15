@@ -10,6 +10,10 @@
             <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
             <link rel="stylesheet" href="{{ asset('css/overwrite.css') }}">
             <link rel="stylesheet" href="{{ asset('css/login-register.css') }}">
+            <link rel="stylesheet" href="{{ asset('css/tagsinput.css') }}">
+            <link rel="stylesheet" href="{{ asset('css/jquery.datetimepicker.min.css') }}">
+
+
 
         {% endblock %}
 
@@ -31,9 +35,11 @@
                                     <span class="sr-only">(current)</span>
                                 </a>
                             </li>
+                            {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ path('draws') }}">Mes draws</a>
                             </li>
+                            {% endif %}
                             <li class="nav-item">
                                 <a class="nav-link" href="#">About</a>
                             </li>
@@ -99,9 +105,9 @@
                             <div class="form">
                                 <form method="POST" name="register"  data-remote="true" action="{{path('app_register')}}" accept-charset="UTF-8">
                                     <input id="username" class="form-control" type="text" placeholder="Username" name="username">
-                                    <input id="mail" class="form-control" type="text" placeholder="Email" name="mail">
+                                    <input id="mail" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" required class="form-control" type="text" placeholder="Email" name="mail">
                                     <input id="password" class="form-control" type="password" placeholder="Password" name="password">
-                                    <input id="password_confirmation" class="form-control" type="password" placeholder="Repeat Password" name="password_confirmation">
+                                    <input id="password_confirmation" onkeyup="checkPassword()" class="form-control" type="password" placeholder="Repeat Password" name="password_confirmation">
                                     <input type="hidden" id="register__token" name="register[_token]" value="{{ csrf_token('register') }}">
                                     <input class="btn btn-default btn-register" type="submit" name="commit">
                                 </form>
@@ -132,11 +138,15 @@
         {% endblock %}
     </div>
 
-    {% block javascripts %}{% endblock %}
-        <script src="https://code.jquery.com/jquery-3.4.1.min.js" ></script>
-        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
-        <script src="{{ asset('js/login-register.js') }}" type="text/javascript"></script>
+        {% block javascripts %}
+            <script src="https://code.jquery.com/jquery-3.4.1.min.js" ></script>
+            <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+            <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+            <script src="{{ asset('js/login-register.js') }}" type="text/javascript"></script>
+            <script src="{{ asset('js/tagsinput.js') }}" type="text/javascript"></script>
+            <script src="{{ asset('js/jquery.datetimepicker.full.min.js') }}" type="text/javascript"></script>
 
+
+        {% endblock %}
     </body>
 </html>

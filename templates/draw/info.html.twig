@@ -12,7 +12,10 @@
 
         <br>
         <div> Date Tirage : {{ draw.dateDraw | date("d/m/Y - H:i:s") }}</div>
-        <div> Code partage: {{ draw.shareCode }}</div>
+        {% if owner is defined and owner  %}
+            <div> Code partage: {{ draw.shareCode }}</div>
+        {% endif %}
+
 
         <h2>Liste des participants </h2>
         <div class="">
@@ -27,8 +30,19 @@
         </div>
 
 
+        <h2>Liste des choix </h2>
+        <div class="">
+            <ul class="list-group">
 
+                {% for choice in choices %}
+                    <tr>
+                        <li class="list-group-item"> {{ choice.text}} {% if choice.participant %} - {{ choice.participant.user.username }} {% endif  %} </li>
+                    </tr>
+                {% endfor %}
+            </ul>
+        </div>
 
+        {% if draw.finished == false and owner is defined and owner %}<a class="btn btn-primary" href="{{ path ('draw.execute', {'id' : draw.id})}}">Exécuter le tirage</a>{% endif  %}
 
     </div>
 {% endblock %}

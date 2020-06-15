@@ -4,14 +4,28 @@
     <div class="container-fluid mt-5">
 
         <h1>Liste des tirages au sort    </h1>
-        <ul class="list-group">
+            <div>
+                <b>Mes draws créés : </b>
+                <ul class="list-group">
+                    {% for draw in drawsOwner %}
+                        <tr>
+                            <li class="list-group-item">{{ draw.id }} - {{draw.name}} <a href="{{path('draw.id',{id: draw.id})}}">Voir</a> </li>
+                        </tr>
+                    {% endfor %}
+                </ul>
+            </div>
 
-            {% for draw in draws %}
-                <tr>
-                    <li class="list-group-item">{{ draw.id }} - {{draw.name}} - <a href="{{path('draw.id',{id: draw.id})}}">Voir</a> </li>
-                </tr>
-            {% endfor %}
-        </ul>
+            <div class="mt-5">
+                <b>Draws que j'ai rejoint :</b>
+                <ul class="list-group">
+                    {% for draw in drawsOther %}
+                        <tr>
+                            <li class="list-group-item">{{ draw.id }} - {{draw.name}} <a href="{{path('draw.id',{id: draw.id})}}">Voir</a> </li>
+                        </tr>
+                    {% endfor %}
+                </ul>
+            </div>
+
     </div>
 
 {% endblock %}

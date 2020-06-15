@@ -82,15 +82,22 @@ class SecurityController extends AbstractController
             if ($form->isSubmitted() && $form->isValid()) {
 
                 $encoded = $encoder->encodePassword($user, $request->request->get("password"));
-                $user->setPassword($encoded);
-                $user->setUsername($request->request->get("username"));
-                $user->setMail($request->request->get("mail"));
-                //$user->setUsername()
-                $this->em->persist($user);
-                $this->em->flush();
-                dump("redirect");
+                if($request->request->get("password") == $request->request->get("password_confirmation")){
+                    $user->setPassword($encoded);
+                    $user->setUsername($request->request->get("username"));
+                    $user->setMail($request->request->get("mail"));
+                    //$user->setUsername()
+                    $this->em->persist($user);
+                    $this->em->flush();
+                    return $this->render('home/index.html.twig');
 
-                return $this->render('home/index.html.twig');
+                }else{
+                    //todo redirect to registerpage with message error
+                    return $this->render('security/login.html.twig');
+
+                }
+
+
             }
         }
         dump("after");

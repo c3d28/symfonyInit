@@ -68,4 +68,16 @@ function shakeModal(){
     }, 1000 ); 
 }
 
+function checkPassword(){
+    console.log("ola");
+    if ($('#password_confirmation').val() !== $('#password').val()) {
+        console.log("ola1");
+        $('#password_confirmation')[0].setCustomValidity('Passwords must match.');
+    }
+    else{
+        console.log("ola2");
+        $('#password_confirmation')[0].setCustomValidity('');
+    }
+}
+
    

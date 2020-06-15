@@ -19,9 +19,6 @@ header{
 
 .div-home-start{
     height:200px;
-    border-radius: 8px;
-    border : solid 1px black;
     font-weight: bold;
-    
     font-family: ".SF NS Display";
 }

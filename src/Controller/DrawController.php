@@ -3,9 +3,11 @@
 namespace App\Controller;
 
 
+use App\Entity\Choice;
 use App\Entity\Draw;
 use App\Entity\Participant;
 use App\Form\DrawType;
+use App\Repository\ChoiceRepository;
 use App\Repository\DrawRepository;
 use App\Repository\ParticipantRepository;
 use phpDocumentor\Reflection\Types\Integer;
@@ -29,10 +31,11 @@ class DrawController extends AbstractController
      */
     private $em;
 
-    public function __construct(DrawRepository $repository,ParticipantRepository $repoParti, EntityManagerInterface $em)
+    public function __construct(DrawRepository $repository, ParticipantRepository $repoParti, EntityManagerInterface $em, ChoiceRepository $repoChoice)
     {
         $this->repository = $repository;
         $this->repoParti = $repoParti;
+        $this->repoChoice = $repoChoice;
 
         $this->em = $em;
     }
@@ -51,20 +54,29 @@ class DrawController extends AbstractController
             ['user' => $this->getUser()]
         );
 
-        $listDraw = array();
 
-        foreach ($partipants as $part){
-            $listDraw = $part->getDraw()->getId();
+        $listDrawJoin = array();
+        $listDrawOwner = array();
+
+        foreach ($partipants as $part) {
+            if ($part->getOwner() == true) {
+                array_push($listDrawOwner, $part->getDraw()->getId());
+            } else {
+                array_push($listDrawJoin, $part->getDraw()->getId());
+            }
         }
 
         //
-        $draws = $this->repository->findBy(
-            ['id' => array($listDraw)]);
+        $drawsOther = $this->repository->findBy(
+            ['id' => $listDrawJoin]);
+        $drawsOwner = $this->repository->findBy(
+            ['id' => $listDrawOwner]);
 
         return $this->render('draw/list.html.twig', [
             'controller_name' => 'DrawController',
             'participants' => $partipants,
-            'draws' => $draws
+            'drawsOther' => $drawsOther,
+            'drawsOwner' => $drawsOwner
         ]);
     }
 
@@ -76,18 +88,34 @@ class DrawController extends AbstractController
      * @return Response
      */
     public function displayDraw(int $id): Response
-        {
+    {
         $draw = $this->repository->findOneBy(
-            ['id' => $id ]
+            ['id' => $id]
         );
 
         $partipants = $this->repoParti->findBy(
             ['draw' => $draw]
         );
-            return $this->render('draw/info.html.twig', [
-                'controller_name' => 'DrawController',
-                'draw' => $draw,
-                'participants' => $partipants
+
+        $choices = $this->repoChoice->findBy(
+            ['draw' => $draw]
+        );
+
+        $owner = false;
+        foreach ($partipants as $part) {
+            if ($part->getOwner() == true) {
+                if ($part->getUser() == $this->getUser()) {
+                    $owner = true;
+                }
+            }
+        }
+
+        return $this->render('draw/info.html.twig', [
+            'controller_name' => 'DrawController',
+            'draw' => $draw,
+            'participants' => $partipants,
+            'owner' => $owner,
+            'choices' => $choices
         ]);
     }
 
@@ -98,18 +126,21 @@ class DrawController extends AbstractController
      * @param $draws
      * @return Response
      */
-    public function joinDraw(EntityManagerInterface $em,Request $request): Response
+    public function joinDraw(EntityManagerInterface $em, Request $request): Response
     {
         dump($request->request->get('code'));
 
         $draw = $this->repository->findOneBy(
-            ['shareCode' => $request->request->get('code') ]
+            ['shareCode' => $request->request->get('code')]
         );
 
-        if($draw != null){
+        if ($draw != null) {
             dump($draw);
-
-            $user = $this->getUser();
+            if ($this->getUser() != null) {
+                $user = $this->getUser();
+            } else {
+                return $this->render('home/index.html.twig');
+            }
 
             // get list of participants for the user current
             $participants = $this->repoParti->findBy(
@@ -119,11 +150,11 @@ class DrawController extends AbstractController
                 ]
             );
 
-            if ($participants == null){
+            if ($participants == null) {
 
                 // add new Participant
                 $participant = new Participant();
-                $participant->setOwner(true);
+                $participant->setOwner(false);
                 $participant->setSubscribed(true);
                 $participant->setUser($user);
                 $participant->setDraw($draw);
@@ -131,14 +162,10 @@ class DrawController extends AbstractController
                 $em->flush();
             }
 
-        }else{
+        } else {
             return $this->render('home/index.html.twig');
         }
-        return $this->render('draw/info.html.twig', [
-            'controller_name' => 'DrawController',
-            'draw' => $draw,
-            'participants' => $participants
-        ]);
+        return $this->redirectToRoute('draw.id',array('id' => $draw->getId()));
     }
 
     /**
@@ -148,17 +175,22 @@ class DrawController extends AbstractController
      * @param Request $request
      * @return Response
      */
-    public function new(EntityManagerInterface $em,Request $request): Response
+    public function new(EntityManagerInterface $em, Request $request): Response
     {
 
         $draw = new Draw();
-        $form = $this->createForm(DrawType::class,$draw);
+        $form = $this->createForm(DrawType::class, $draw);
         $form->handleRequest($request);
         $user = $this->getUser();
 
-        if ($form->isSubmitted() && $form->isValid()){
+        dump($form);
+        dump($request);
+
+
+        if ($form->isSubmitted() && $form->isValid()) {
             $draw->setDateCreation(new \DateTime('now'));
             $draw->setShareCode(uniqid());
+            $draw->setType("UNIQUEDRAW");
             $this->em->persist($draw);
             $this->em->flush();
 
@@ -171,7 +203,20 @@ class DrawController extends AbstractController
             $participant->setDraw($draw);
             $em->persist($participant);
             $em->flush();
-            return $this->redirectToRoute('home');
+
+            if ($request->get("choices") != null) {
+                $choices = $request->get("choices");
+                $choices_arr = explode(",", $choices);
+
+                foreach ($choices_arr as $choiceString) {
+                    $choice = new Choice();
+                    $choice->setText($choiceString);
+                    $choice->setDraw($draw);
+                    $em->persist($choice);
+                    $em->flush();
+                };
+            }
+            //return $this->redirectToRoute('home');
         }
 
         return $this->render('draw/index.html.twig', [
@@ -179,4 +224,67 @@ class DrawController extends AbstractController
             'form' => $form->createView()
         ]);
     }
+
+    /**
+     * @Route("/draw/execute/{id}", name="draw.execute")
+     * @param EntityManagerInterface $em
+     * @param int $int
+     * @param Request $request
+     * permite to start the draw
+     * @return Response
+     */
+    public function execute(EntityManagerInterface $em, int $id): Response
+    {
+        $draw = $this->repository->findOneBy(
+            ['id' => $id]
+        );
+
+        $partipants = $this->repoParti->findBy(
+            ['draw' => $draw]
+        );
+
+        $choices = $this->repoChoice->findBy(
+            ['draw' => $draw]
+        );
+
+        $nbParticipant = count($partipants);
+        $nbChoice = count($choices);
+
+        dump($nbParticipant);
+        dump($choices);
+        if($nbChoice < $nbParticipant){
+
+        }else{
+            $rand_keys = array_rand($choices, $nbParticipant);
+
+            if($nbParticipant ==1){
+                $choice = $choices[$rand_keys];
+                $choice->setParticipant($partipants[0]);
+                $em->persist($choice);
+            }else{
+                if($nbChoice >= $nbParticipant){
+                    $flagParti = 0;
+
+                    foreach ($rand_keys as $key){
+                        $choice = $choices[$key];
+                        $choice->setParticipant($partipants[$flagParti]);
+                        $flagParti++;
+                        $em->persist($choice);
+                    }
+                }
+
+            }
+        }
+
+
+
+        $em->flush();
+
+
+        return $this->render('home/index.html.twig', [
+            'message' => 'OK'
+        ]);
+
+    }
+
 }
