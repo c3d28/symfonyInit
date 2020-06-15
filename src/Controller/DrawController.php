@@ -185,6 +185,7 @@ class DrawController extends AbstractController
             $draw->setDateCreation(new \DateTime('now'));
             $draw->setShareCode(uniqid());
             $draw->setType("UNIQUEDRAW");
+            $draw->setFinished(false);
             $this->em->persist($draw);
             $this->em->flush();
 
@@ -264,9 +265,11 @@ class DrawController extends AbstractController
                         $em->persist($choice);
                     }
                 }
-
             }
         }
+        $draw->setFinished(true);
+        $em->persist($draw);
+
 
         $em->flush();
 
