@@ -184,7 +184,6 @@ class DrawController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $draw->setDateCreation(new \DateTime('now'));
             $draw->setShareCode(uniqid());
-            $draw->setType("UNIQUEDRAW");
             $draw->setFinished(false);
             $this->em->persist($draw);
             $this->em->flush();
@@ -199,7 +198,7 @@ class DrawController extends AbstractController
             $em->persist($participant);
             $em->flush();
 
-            if ($request->get("choices") != null) {
+            if ($draw->getType() != "unique" && $request->get("choices") != null) {
                 $choices = $request->get("choices");
                 $choices_arr = explode(",", $choices);
 
@@ -209,9 +208,14 @@ class DrawController extends AbstractController
                     $choice->setDraw($draw);
                     $em->persist($choice);
                     $em->flush();
-                };
+                }
+            }else{
+                $choice = new Choice();
+                $choice->setText('winner');
+                $choice->setDraw($draw);
+                $em->persist($choice);
+                $em->flush();
             }
-            //return $this->redirectToRoute('home');
         }
 
         return $this->render('draw/index.html.twig', [
@@ -230,11 +234,13 @@ class DrawController extends AbstractController
      */
     public function execute(EntityManagerInterface $em, int $id): Response
     {
+
+
         $draw = $this->repository->findOneBy(
             ['id' => $id]
         );
 
-        $partipants = $this->repoParti->findBy(
+        $participants = $this->repoParti->findBy(
             ['draw' => $draw]
         );
 
@@ -242,17 +248,60 @@ class DrawController extends AbstractController
             ['draw' => $draw]
         );
 
-        $nbParticipant = count($partipants);
+
+
+        switch ($draw->getType()) {
+            case 'unique':
+                $this->executeUnique($em,$participants,$draw,$choices);
+                break;
+            case 'all_participant':
+                $this->executeAllParticipant($em,$participants,$draw,$choices);
+                break;
+            case 'all_gift':
+                $this->executeAllGift($em,$participants,$draw,$choices);
+                break;
+
+        }
+
+
+        return $this->render('home/index.html.twig', [
+            'message' => 'OK'
+        ]);
+
+    }
+
+    public function executeUnique(EntityManagerInterface $em, array $participants,Draw $draw,array $choices): EntityManagerInterface{
+        $rand_keys = array_rand( $participants,1);
+        $winner = $participants[$rand_keys];
+
+        $choice = $choices[0];
+        $choice->setParticipant($winner);
+        $em->persist($choice);
+
+        $draw->setFinished(true);
+        $em->persist($draw);
+        $em->flush();
+
+        return $em;
+    }
+
+    /**
+     * All participant have a gift ( so choices > or equal than the number of particiupant )
+     * @param EntityManagerInterface $em
+     * @param int $id
+     * @return Response
+     */
+    public function executeAllParticipant(EntityManagerInterface $em, array $participants,Draw $draw,array $choices): EntityManagerInterface
+    {
+        $nbParticipant = count($participants);
         $nbChoice = count($choices);
 
-        if($nbChoice < $nbParticipant){
-
-        }else{
+        if ($nbChoice >= $nbParticipant) {
             $rand_keys = array_rand($choices, $nbParticipant);
 
             if($nbParticipant ==1){
                 $choice = $choices[$rand_keys];
-                $choice->setParticipant($partipants[0]);
+                $choice->setParticipant($participants[0]);
                 $em->persist($choice);
             }else{
                 if($nbChoice >= $nbParticipant){
@@ -260,23 +309,50 @@ class DrawController extends AbstractController
 
                     foreach ($rand_keys as $key){
                         $choice = $choices[$key];
-                        $choice->setParticipant($partipants[$flagParti]);
+                        $choice->setParticipant($participants[$flagParti]);
                         $flagParti++;
                         $em->persist($choice);
                     }
                 }
             }
+            $draw->setFinished(true);
+            $em->persist($draw);
+            $em->flush();
+
+            return $em;
         }
-        $draw->setFinished(true);
-        $em->persist($draw);
-
-
-        $em->flush();
-
-        return $this->render('home/index.html.twig', [
-            'message' => 'OK'
-        ]);
+        //todo else error (pas assez de choix pour tous les participants
 
     }
+
+    /**
+     * All Choices are associated to a participant (so choices < or equal than the number of participant)
+     * @param EntityManagerInterface $em
+     * @param int $id
+     * @return Response
+     */
+    public function executeAllGift(EntityManagerInterface $em, array $participants,Draw $draw,array $choices): EntityManagerInterface{
+        $nbParticipant = count($participants);
+        $nbChoice = count($choices);
+
+        if ($nbChoice <= $nbParticipant){
+            $rand_keys = array_rand($participants, $nbChoice);
+            dump($participants);
+            dump($nbChoice);
+
+            dump($rand_keys);
+            dump($participants[0]);
+
+
+        }else{
+            //Not possible :
+
+        }
+        return $em;
+
+    }
+
+
+
 
 }

@@ -7,6 +7,8 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+
 
 
 class DrawType extends AbstractType
@@ -25,7 +27,17 @@ class DrawType extends AbstractType
                             ]
                 ]
             )
-            //->add('type')
+            ->add('type',
+                ChoiceType::class,
+                [
+                    'choices' => [
+                        'Unique' => 'unique',
+                        'Tirage de tous les participants' => 'all_participant',
+                        'Tirage de tous les lots' => 'all_gift'
+                    ]
+                ]
+            )
+
             
         ;
     }
