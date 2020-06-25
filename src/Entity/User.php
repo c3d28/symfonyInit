@@ -29,7 +29,7 @@ class User implements UserInterface, \Serializable
     private $password;
 
     /**
-     * @ORM\Column(type="json")
+     * @ORM\Column(type="json",nullable=true)
      */
     private $roles = [];
 
