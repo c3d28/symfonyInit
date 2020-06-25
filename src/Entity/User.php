@@ -29,6 +29,12 @@ class User implements UserInterface, \Serializable
     private $password;
 
     /**
+     * @ORM\Column(type="json")
+     */
+    private $roles = [];
+
+
+    /**
      * @ORM\Column(type="string", length=255,unique=true)
      */
     private $mail;
@@ -73,13 +79,25 @@ class User implements UserInterface, \Serializable
 
         return $this;
     }
-    
-    public function getRoles() {
-        return [
-            'ROLE_USER'
-        ];
+
+
+    public function getRoles(): array
+    {
+        $roles = $this->roles;
+        dump($roles);
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
     }
-    
+
+    public function setRoles(array $roles): self
+    {
+        $this->roles = $roles;
+        return $this;
+    }
+
+
     public function getSalt() {
         
     }
@@ -95,7 +113,7 @@ class User implements UserInterface, \Serializable
             $this->username 
         ]);
     }
-    
+
     public function unserialize($string){
         list(
                 $this->id,

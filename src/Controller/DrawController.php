@@ -337,17 +337,34 @@ class DrawController extends AbstractController
 
         if ($nbChoice <= $nbParticipant){
             $rand_keys = array_rand($participants, $nbChoice);
+            shuffle($rand_keys);
+
             dump($participants);
             dump($nbChoice);
 
             dump($rand_keys);
             dump($participants[0]);
 
+            $flagChoice = 0;
+
+            foreach ($rand_keys as $key){
+                if($flagChoice <= $nbChoice){
+                    $choice = $choices[$flagChoice];
+                    $choice->setParticipant($participants[$key]);
+                    $flagChoice++;
+                    $em->persist($choice);
+                }else{
+                    // stop pick because all gift have been picked.
+                }
+            }
 
         }else{
             //Not possible :
 
         }
+        $draw->setFinished(true);
+        $em->persist($draw);
+        $em->flush();
         return $em;
 
     }

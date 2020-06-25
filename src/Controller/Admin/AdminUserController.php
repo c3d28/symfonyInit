@@ -5,6 +5,7 @@ namespace App\Controller\Admin;
 
 
 use App\Entity\User;
+use App\Form\EditUserType;
 use App\Form\UserType;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -47,7 +48,7 @@ class AdminUserController extends AbstractController
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function  edit(User $user, Request $request){
-        $form = $this->createForm(UserType::class,$user);
+        $form = $this->createForm(EditUserType::class,$user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()){
