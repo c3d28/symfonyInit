@@ -37,15 +37,18 @@
                                 </a>
                             </li>
                             {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ path('draws') }}">Mes draws</a>
-                            </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ path('draws') }}">Mes draws</a>
+                                </li>
+                                <li class="nav-item">
+                                    <button type="button" class="btn btn-light">
+                                        <i class="icon-bell"></i> <span class="badge badge-danger">0</span>
+                                    </button>
+
+                                </li>
                             {% endif %}
-                            <li class="nav-item">
-                                <button type="button" class="btn btn-light">
-                                    Notifications <span class="badge badge-danger">0</span>
-                                </button>
-                            </li>
+
+                            {% if app.user %}
 
                             <div>
                                 <ul class="nav navbar-nav">
@@ -59,16 +62,21 @@
                                                     <a class="dropdown-item" href="{{ path('admin.user.index') }}">Panneau admin</a>
                                                 {% endif %}
                                             <div class="dropdown-divider"></div>
-                                            {% if app.user %}
+
                                                 <a class="dropdown-item" href="{{ path('app_logout') }}"><i class="icon-off mr-2 "></i>Se déconnecter</a>
-                                            {% else %}
+
                                                 <!-- <a class="nav-link" href="{{ path('login') }}">Se Connecter</a> -->
-                                                 <a class="dropdown-item" onclick="openLoginModal()"><i class="icon-on mr-2 "></i> Se Connecter</a>
-                                            {% endif %}
                                         </div>
+
                                     </li>
                                 </ul>
                             </div>
+                            {% else %}
+                                <li class="nav-item">
+                                    <a class="nav-link" onclick="openLoginModal()"><i class="icon-on mr-2 "></i> Se Connecter</a>
+                                </li>
+                            {% endif %}
+
                         </ul>
                     </div>
                 </div>
