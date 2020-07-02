@@ -21,8 +21,7 @@
     </head>
     <body>
         <header>
-
-            !-- Navigation -->
+            <!-- Navigation -->
             <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
                 <div class="container">
                     <a class="navbar-brand" href="{{ path('home') }}"><img src="{{ asset('images/logo.png') }}" /></a>
@@ -40,12 +39,13 @@
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ path('draws') }}">Mes draws</a>
                                 </li>
+                                <!--
                                 <li class="nav-item">
                                     <button type="button" class="btn btn-light">
                                         <i class="icon-bell"></i> <span class="badge badge-danger">0</span>
                                     </button>
 
-                                </li>
+                                </li> -->
                             {% endif %}
 
                             {% if app.user %}
@@ -157,6 +157,16 @@
     </div>
 
 
+        <!-- Top Flash alert -->
+        {% for message in app.flashes('success') %}
+
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {% endfor %}
 
     <div class="container mt-5">
 

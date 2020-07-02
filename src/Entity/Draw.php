@@ -27,7 +27,7 @@ class Draw
     private $dateCreation;
 
     /**
-     * @ORM\Column(type="date")
+     * @ORM\Column(type="datetime")
      */
     private $dateDraw;
 
@@ -75,17 +75,22 @@ class Draw
         return $this;
     }
 
-    public function getDateDraw(): ?\DateTimeInterface
+    /**
+     * @return mixed
+     */
+    public function getDateDraw()
     {
         return $this->dateDraw;
     }
 
-    public function setDateDraw(\DateTimeInterface $dateDraw): self
+    /**
+     * @param mixed $dateDraw
+     */
+    public function setDateDraw($dateDraw): void
     {
         $this->dateDraw = $dateDraw;
-
-        return $this;
     }
+
 
     public function getFinished(): ?bool
     {

@@ -10,14 +10,16 @@ use App\Form\DrawType;
 use App\Repository\ChoiceRepository;
 use App\Repository\DrawRepository;
 use App\Repository\ParticipantRepository;
+use DateTime;
 use phpDocumentor\Reflection\Types\Integer;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Mailer\Mailer;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Validator\Constraints\DateTime;
 
 class DrawController extends AbstractController
 {
@@ -47,13 +49,13 @@ class DrawController extends AbstractController
      * @param $draws
      * @return Response
      */
-    public function list(): Response
+    public function list(EntityManagerInterface $em): Response
     {
+
         // get list of participants for the user current
         $partipants = $this->repoParti->findBy(
             ['user' => $this->getUser()]
         );
-
 
         $listDrawJoin = array();
         $listDrawOwner = array();
@@ -87,8 +89,10 @@ class DrawController extends AbstractController
      * @param $draws
      * @return Response
      */
-    public function displayDraw(int $id): Response
+    public function displayDraw(EntityManagerInterface $em,int $id): Response
     {
+
+
         $draw = $this->repository->findOneBy(
             ['id' => $id]
         );
@@ -188,7 +192,6 @@ class DrawController extends AbstractController
             $this->em->persist($draw);
             $this->em->flush();
 
-
             // add new Participant
             $participant = new Participant();
             $participant->setOwner(true);
@@ -216,6 +219,16 @@ class DrawController extends AbstractController
                 $em->persist($choice);
                 $em->flush();
             }
+            $this->addFlash('success', 'Tirage au sort créé ! ');
+
+
+            $response = $this->forward('App\Controller\MailController::sendEmail', [
+                'receiver' => 'c5dr9k@gmail.com',
+                'subject' => 'DraftBox - Tirage au sort créé',
+                'text' => 'Votre tirage au sort a été créé avec pour id : '. $draw->getId()
+            ]);
+
+
         }
 
         return $this->render('draw/index.html.twig', [
@@ -252,14 +265,45 @@ class DrawController extends AbstractController
 
         switch ($draw->getType()) {
             case 'unique':
-                $this->executeUnique($em,$participants,$draw,$choices);
+                try {
+                    $this->executeUnique($em,$participants,$draw,$choices);
+
+                } catch (\Exception $e) {
+                    $draw->setFinished(true);
+                    $em->persist($draw);
+                    $em->flush();
+
+                }
+
                 break;
             case 'all_participant':
-                $this->executeAllParticipant($em,$participants,$draw,$choices);
+                try{
+                    $this->executeAllParticipant($em,$participants,$draw,$choices);
+                    } catch (\Exception $e) {
+                    $draw->setFinished(true);
+                    $em->persist($draw);
+                    $em->flush();
+
+                }
                 break;
             case 'all_gift':
-                $this->executeAllGift($em,$participants,$draw,$choices);
+                try {
+                    $this->executeAllGift($em, $participants, $draw, $choices);
+                } catch (\Exception $e) {
+                        $draw->setFinished(true);
+                        $em->persist($draw);
+                        $em->flush();
+
+                }
                 break;
+            default :
+                dump("Rien ne s'est passé");
+                $draw->setFinished(true);
+                $em->persist($draw);
+                $em->flush();
+
+                break;
+
 
         }
 
@@ -339,12 +383,6 @@ class DrawController extends AbstractController
             $rand_keys = array_rand($participants, $nbChoice);
             shuffle($rand_keys);
 
-            dump($participants);
-            dump($nbChoice);
-
-            dump($rand_keys);
-            dump($participants[0]);
-
             $flagChoice = 0;
 
             foreach ($rand_keys as $key){
@@ -371,5 +409,24 @@ class DrawController extends AbstractController
 
 
 
+    /**
+     * CheckAndExecutetheDraw
+     * @param EntityManagerInterface $em
+     * @param int $id
+     * @return Response
+     */
+    public function checkAndExecute(EntityManagerInterface $em): array
+    {
 
+        //get all draw not finished and date draw before now
+        $list = $this->repository->findDrawToExecute();
+
+        dump($list);
+
+        foreach ($list as $draw){
+            dump($draw);
+            $this->execute($em,$draw->getId());
+        }
+        return $list;
+    }
 }

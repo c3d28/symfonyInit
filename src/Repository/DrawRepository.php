@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Draw;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 
@@ -19,22 +20,20 @@ class DrawRepository extends ServiceEntityRepository
         parent::__construct($registry, Draw::class);
     }
 
-    // /**
-    //  * @return Draw[] Returns an array of Draw objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    /**
+    * @return Draw[] Returns an array of Draw objects
+     */
+
+    public function findDrawToExecute()
     {
         return $this->createQueryBuilder('d')
-            ->andWhere('d.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('d.id', 'ASC')
-            ->setMaxResults(10)
+            ->andWhere('d.finished = false AND d.dateDraw < :date')
+            ->setParameter('date', new DateTime())
             ->getQuery()
             ->getResult()
         ;
     }
-    */
+
 
     /*
     public function findOneBySomeField($value): ?Draw

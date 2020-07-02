@@ -31,8 +31,10 @@ class AdminUserController extends AbstractController
         $this->em = $em;
     }
 
+
+
     /**
-     * @Route("/admin", name="admin.user.index")
+     * @Route("/admin/user", name="admin.user.index")
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function  index(){

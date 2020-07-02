@@ -4,16 +4,17 @@
 namespace App\Controller\Admin;
 
 
-use App\Entity\User;
-use App\Form\EditUserType;
-use App\Form\UserType;
+use App\Controller\DrawController;
+use App\Repository\ChoiceRepository;
+use App\Repository\DrawRepository;
+use App\Repository\ParticipantRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-class AdminUserController extends AbstractController
+class AdminController extends AbstractController
 {
     /**
      * @var UserRepository
@@ -24,43 +25,36 @@ class AdminUserController extends AbstractController
      */
     private $em;
 
-    public function __construct(UserRepository $repository, EntityManagerInterface $em)
+    public function __construct(DrawRepository $drawrepo,UserRepository $repository, EntityManagerInterface $em,ChoiceRepository $repoChoice,ParticipantRepository $repoParti)
     {
-
+        $this->repoDraw  = $drawrepo;
         $this->repository = $repository;
         $this->em = $em;
+        $this->repoParti = $repoParti;
+        $this->repoChoice = $repoChoice;
     }
-
-$this->checkAndExecute($em);
 
 
     /**
-     * @Route("/admin", name="admin.user.index")
+     * @Route("/admin", name="admin.index")
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function  index(){
-        $users = $this->repository->findAll();
-        return $this->render('admin/user/index.html.twig',compact('users'));
+
+        return $this->render('admin/index.html.twig');
     }
 
-
     /**
-     * @Route("/admin/user/edit/{id}", name="admin.user.edit")
-     * @param User $user
+     * @Route("/admin/executeOldDraw", name="admin.execute.draws")
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function  edit(User $user, Request $request){
-        $form = $this->createForm(EditUserType::class,$user);
-        $form->handleRequest($request);
+    public function  executeAllOldDraws(){
 
-        if ($form->isSubmitted() && $form->isValid()){
-            $this->em->flush();
-            return $this->redirectToRoute('admin.user.index');
-        }
-        return $this->render('admin/user/edit.html.twig',[
-            'user' => $user,
-            'form' => $form->createView()
+        $this->forward('App\Controller\DrawController::checkAndExecute', [
+            'em'  => $this->em
         ]);
+
+        return $this->render('admin/index.html.twig');
     }
 }
