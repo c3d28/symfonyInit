@@ -245,10 +245,20 @@ class DrawController extends AbstractController
      * permite to start the draw
      * @return Response
      */
-    public function execute(EntityManagerInterface $em, int $id): Response
+    public function executeButton(EntityManagerInterface $em, int $id): Response
     {
 
 
+        execute();
+
+
+        return $this->render('home/index.html.twig', [
+            'message' => 'OK'
+        ]);
+
+    }
+
+    public function execute(EntityManagerInterface $em, int $id): Response{
         $draw = $this->repository->findOneBy(
             ['id' => $id]
         );
@@ -279,7 +289,7 @@ class DrawController extends AbstractController
             case 'all_participant':
                 try{
                     $this->executeAllParticipant($em,$participants,$draw,$choices);
-                    } catch (\Exception $e) {
+                } catch (\Exception $e) {
                     $draw->setFinished(true);
                     $em->persist($draw);
                     $em->flush();
@@ -290,9 +300,9 @@ class DrawController extends AbstractController
                 try {
                     $this->executeAllGift($em, $participants, $draw, $choices);
                 } catch (\Exception $e) {
-                        $draw->setFinished(true);
-                        $em->persist($draw);
-                        $em->flush();
+                    $draw->setFinished(true);
+                    $em->persist($draw);
+                    $em->flush();
 
                 }
                 break;
@@ -303,15 +313,7 @@ class DrawController extends AbstractController
                 $em->flush();
 
                 break;
-
-
         }
-
-
-        return $this->render('home/index.html.twig', [
-            'message' => 'OK'
-        ]);
-
     }
 
     public function executeUnique(EntityManagerInterface $em, array $participants,Draw $draw,array $choices): EntityManagerInterface{
@@ -415,7 +417,7 @@ class DrawController extends AbstractController
      * @param int $id
      * @return Response
      */
-    public function checkAndExecute(EntityManagerInterface $em): array
+    public function checkAndExecute(EntityManagerInterface $em)
     {
 
         //get all draw not finished and date draw before now
@@ -427,6 +429,6 @@ class DrawController extends AbstractController
             dump($draw);
             $this->execute($em,$draw->getId());
         }
-        return $list;
+        return $this->render('admin/index.html.twig');
     }
 }
