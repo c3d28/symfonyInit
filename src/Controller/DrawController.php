@@ -249,8 +249,7 @@ class DrawController extends AbstractController
     {
 
 
-        execute();
-
+        $this->execute($em,$id);
 
         return $this->render('home/index.html.twig', [
             'message' => 'OK'
