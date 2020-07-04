@@ -304,7 +304,6 @@ class DrawController extends AbstractController
                 }
                 break;
             default :
-                dump("Rien ne s'est passé");
                 $draw->setFinished(true);
                 $em->persist($draw);
                 $em->flush();
@@ -422,10 +421,7 @@ class DrawController extends AbstractController
         //get all draw not finished and date draw before now
         $list = $this->repository->findDrawToExecute();
 
-        dump($list);
-
         foreach ($list as $draw){
-            dump($draw);
             $this->execute($em,$draw->getId());
         }
         return $this->render('admin/index.html.twig');

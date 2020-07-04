@@ -12,6 +12,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class AdminUserController extends AbstractController
 {
@@ -49,11 +50,17 @@ class AdminUserController extends AbstractController
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function  edit(User $user, Request $request){
+    public function  edit(User $user, Request $request,UserPasswordEncoderInterface $encoder){
         $form = $this->createForm(EditUserType::class,$user);
         $form->handleRequest($request);
 
+        dump($user);
+        $encoded = $encoder->encodePassword($user, $user->getPassword());
+
+
         if ($form->isSubmitted() && $form->isValid()){
+            $user->setPassword($encoded);
+            $this->em->persist($user);
             $this->em->flush();
             return $this->redirectToRoute('admin.user.index');
         }

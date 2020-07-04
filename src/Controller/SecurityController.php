@@ -65,18 +65,14 @@ class SecurityController extends AbstractController
     public function register(AuthenticationUtils $authenticationUtils,Request $request,UserPasswordEncoderInterface $encoder): Response
     {
         $submittedToken = $request->request->get('register');
-        dump($submittedToken);
 
         if (!$this->isCsrfTokenValid('register', $submittedToken['_token'])) {
-            dump("error");
 
         }
 
         $user = new User();
 
         $form = $this->createForm(RegisterType::class,$user);
-        dump("before");
-
         if ($request->isMethod('POST')) {
             $form->submit($request->request->get($form->getName()));
             if ($form->isSubmitted() && $form->isValid()) {
@@ -100,12 +96,9 @@ class SecurityController extends AbstractController
 
             }
         }
-        dump("after");
-
         return $this->render('home/index.html.twig');
         /*$plainPassword = 'admin';
         $encoded = $encoder->encodePassword($user, $plainPassword);
-        dump($encoded);
         $user->setPassword($encoded);
         $user->setMail('c5dr9k@gmail.com');
         $em = $this->getDoctrine()->getManager();
