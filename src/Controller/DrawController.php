@@ -247,8 +247,6 @@ class DrawController extends AbstractController
      */
     public function executeButton(EntityManagerInterface $em, int $id): Response
     {
-
-
         $this->execute($em,$id);
 
         return $this->render('home/index.html.twig', [
@@ -257,7 +255,7 @@ class DrawController extends AbstractController
 
     }
 
-    public function execute(EntityManagerInterface $em, int $id): Response{
+    public function execute(EntityManagerInterface $em, int $id){
         $draw = $this->repository->findOneBy(
             ['id' => $id]
         );
@@ -313,6 +311,8 @@ class DrawController extends AbstractController
 
                 break;
         }
+
+
     }
 
     public function executeUnique(EntityManagerInterface $em, array $participants,Draw $draw,array $choices): EntityManagerInterface{
