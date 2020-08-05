@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Un problème est survenu{% endblock %}
+
+{% block body %}
+    <h1>Problème rencontré</h1>
+    <p>Une erreur a été rencontrée</p>
+    <p>Le code est : {{status_code}}</p>
+    <p>Le texte est : {{status_text}}</p>
+    Détails : {{exception.message}}
+{% endblock %}

@@ -77,4 +77,13 @@ function checkPassword(){
     }
 }
 
+function checkUsername(){
+    if ($('#username').validity.typeMismatch) {
+        $('#username')[0].setCustomValidity('Nom d\'utilisateur incorrect.');
+    }
+    else{
+        $('#username')[0].setCustomValidity('');
+    }
+}
+
    

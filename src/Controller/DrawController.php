@@ -74,12 +74,46 @@ class DrawController extends AbstractController
         $drawsOwner = $this->repository->findBy(
             ['id' => $listDrawOwner]);
 
+
+        /*$access_token = 'IGQVJVSVJvUUExNU1xU0ZAWQjlWOWVjbURZAb1BGMEp2akxsMWJRSm04cFVxS2ljWFJGZA0gtZAnoyR3Q4Wk1OUVdHeGd1ampidW5BWGI3VEY5R09KVEJlQ1o0c0doeTF3cWZAiUEdxQkpiVXg5SkRXZAlljbwZDZD';
+        $tag = 'c3d28';
+        $return = $this->rudr_instagram_api_curl_connect('https://api.instagram.com/v1/tags/' . $tag . '/media/recent?access_token=' . $access_token);
+
+        dump($return);*/
+
         return $this->render('draw/list.html.twig', [
             'controller_name' => 'DrawController',
             'participants' => $partipants,
             'drawsOther' => $drawsOther,
             'drawsOwner' => $drawsOwner
         ]);
+    }
+
+
+    public function rudr_instagram_api_curl_connect( $api_url ){
+
+            $params = array( // post parmas
+                'client_id' => '745188716257639',
+                'client_secret' => '0df763cd788f67226c248abef167210c',
+                'grant_type' => 'authorization_code',
+                'redirect_uri' => 'http://instagram.com',
+            );
+
+            // call IG access_token endpoint with params to get a valid access token
+            $ch = curl_init( 'https://api.instagram.com/oauth/access_token' );
+            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+            curl_setopt( $ch, CURLOPT_CUSTOMREQUEST, 'POST' );
+            curl_setopt( $ch, CURLOPT_POSTFIELDS, $params );
+            curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, FALSE );
+            $response_raw = curl_exec( $ch );
+            $response = json_decode( $response_raw, true );
+            curl_close( $ch );
+
+            // display our repsonse from IG
+            dump( $response );
+            return $response;
+
+
     }
 
     /**

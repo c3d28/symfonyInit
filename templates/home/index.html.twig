@@ -4,41 +4,128 @@
 
 
 {% block body %}
+    <main role="main">
     {% if app.user %}
-
-    <div class="row" >
-        <div class="col-md-2"></div>
-        <div class="col-md-4">
-            <div  class="div-home-start card justify-content-center">
-                <div class="m-2">
-                    <h2>Créer un tirage</h2>
-                    <div class="mt-12">
-                        <span class="btn-home-start mt-5">
-                            <a class="form-control btn btn-secondary" href="{{ path('draw.new') }}">Créer un tirage</a>
-                        </span>
+        <section class="container">
+            <div class="row" >
+                <div class="col-md-2"></div>
+                <div class="col-md-4">
+                    <div  class="div-home-start card justify-content-center">
+                        <div class="m-2">
+                            <h2>Créer un tirage</h2>
+                            <div class="mt-12">
+                                <span class="btn-home-start mt-5">
+                                    <a class="form-control btn btn-secondary" href="{{ path('draw.new') }}">Créer un tirage</a>
+                                </span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="div-home-start card justify-content-center">
-                <div class="m-2">
-                    <h2>Rejoindre un tirage</h2>
-                    <form action="{{ path('draw.join') }}" method="post">
-                        <div class="m-12">
-                            <input class="form-control mb-3" type="text" name="code" placeholder="Entrer le code" />
-                        </div>
-                        <div class="m-12">
-                            <button class="form-control btn btn-secondary" type="submit">Rejoindre le tirage</button>
-                        </div>
+                <div class="col-md-4">
+                    <div class="div-home-start card justify-content-center">
+                        <div class="m-2">
+                            <h2>Rejoindre un tirage</h2>
+                            <form action="{{ path('draw.join') }}" method="post">
+                                <div class="m-12">
+                                    <input class="form-control mb-3" type="text" name="code" placeholder="Entrer le code" />
+                                </div>
+                                <div class="m-12">
+                                    <button class="form-control btn btn-secondary" type="submit">Rejoindre le tirage</button>
+                                </div>
 
-                    </form>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4"></div>
+
+            </div>
+        </section>
+    {%  else %}
+
+        <section class="jumbotron text-center landingpage">
+            <div class="container">
+                <h2>Des tirages au sort certifiés </h2>
+                <p>Crée tes tirages aux sort personnalisés. Ils seront garantis sans triche</p>
+                <div class="row">
+                    <p></p>
+                </div>
+                <p><a onclick="openLoginModal()" class="btn btn-primary btn-lg btn-custom">S'inscrire ou se connecter</a></p>
+            </div>
+        </section>
+
+        <div class="container marketing">
+
+            <!-- Three columns of text below the carousel -->
+            <div class="row">
+                <div class="col-lg-4">
+                    <svg class="bd-placeholder-img rounded-circle" width="140" height="140" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: 140x140"><title>Placeholder</title><rect width="100%" height="100%" fill="#777"></rect><text x="50%" y="50%" fill="#777" dy=".3em">140x140</text></svg>
+                    <h2>Tirage unique</h2>
+                    <p> Ce mode est parfait si tu dois tirer au sort un participant.</p>
+                    <p><a class="btn btn-secondary" href="#" role="button">View details »</a></p>
+                </div><!-- /.col-lg-4 -->
+                <div class="col-lg-4">
+                    <svg class="bd-placeholder-img rounded-circle" width="140" height="140" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: 140x140"><title>Placeholder</title><rect width="100%" height="100%" fill="#777"></rect><text x="50%" y="50%" fill="#777" dy=".3em">140x140</text></svg>
+                    <h2>Tirer tous les cadeaux</h2>
+                    <p>Tu as plusieurs cadeaux à offrir ce mode permettra de tirer au sort le nombre de personne adéquat en fonction du nombre de cadeau possible.</p>
+                    <p><a class="btn btn-secondary" href="#" role="button">View details »</a></p>
+                </div><!-- /.col-lg-4 -->
+                <div class="col-lg-4">
+                    <svg class="bd-placeholder-img rounded-circle" width="140" height="140" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: 140x140"><title>Placeholder</title><rect width="100%" height="100%" fill="#777"></rect><text x="50%" y="50%" fill="#777" dy=".3em">140x140</text></svg>
+                    <h2>Tirer un résultat pour chaque participant</h2>
+                    <p>Ce mode permettra de tirer au sort pour chaque participant un choix unique compris dans une liste. Exemple: 5 voitures sont disponibles pour Jean et André. Ce tirage choisira la Peugeot 208 pour Jean et la Citroen C3 pour André</p>
+                    <p><a class="btn btn-secondary" href="#" role="button">View details »</a></p>
+                </div><!-- /.col-lg-4 -->
+            </div><!-- /.row -->
+
+
+            <!-- START THE FEATURETTES -->
+
+            <hr class="featurette-divider">
+
+            <div class="row featurette">
+                <div class="col-md-7">
+                    <h2 class="featurette-heading">First featurette heading. <span class="text-muted">It’ll blow your mind.</span></h2>
+                    <p class="lead">Donec ullamcorper nulla non metus auctor fringilla. Vestibulum id ligula porta felis euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur. Fusce dapibus, tellus ac cursus commodo.</p>
+                </div>
+                <div class="col-md-5">
+                    <svg class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="500" height="500" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: 500x500"><title>Placeholder</title><rect width="100%" height="100%" fill="#eee"></rect><text x="50%" y="50%" fill="#aaa" dy=".3em">500x500</text></svg>
                 </div>
             </div>
-        </div>
-        <div class="col-md-4"></div>
 
-    </div>
+            <hr class="featurette-divider">
+
+            <div class="row featurette">
+                <div class="col-md-7 order-md-2">
+                    <h2 class="featurette-heading">Oh yeah, it’s that good. <span class="text-muted">See for yourself.</span></h2>
+                    <p class="lead">Donec ullamcorper nulla non metus auctor fringilla. Vestibulum id ligula porta felis euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur. Fusce dapibus, tellus ac cursus commodo.</p>
+                </div>
+                <div class="col-md-5 order-md-1">
+                    <svg class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="500" height="500" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: 500x500"><title>Placeholder</title><rect width="100%" height="100%" fill="#eee"></rect><text x="50%" y="50%" fill="#aaa" dy=".3em">500x500</text></svg>
+                </div>
+            </div>
+
+            <hr class="featurette-divider">
+
+            <div class="row featurette">
+                <div class="col-md-7">
+                    <h2 class="featurette-heading">And lastly, this one. <span class="text-muted">Checkmate.</span></h2>
+                    <p class="lead">Donec ullamcorper nulla non metus auctor fringilla. Vestibulum id ligula porta felis euismod semper. Praesent commodo cursus magna, vel scelerisque nisl consectetur. Fusce dapibus, tellus ac cursus commodo.</p>
+                </div>
+                <div class="col-md-5">
+                    <svg class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="500" height="500" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: 500x500"><title>Placeholder</title><rect width="100%" height="100%" fill="#eee"></rect><text x="50%" y="50%" fill="#aaa" dy=".3em">500x500</text></svg>
+                </div>
+            </div>
+
+            <hr class="featurette-divider">
+
+            <!-- /END THE FEATURETTES -->
+
+        </div>
+
     {% endif %}
+
+    </main>
+
 
 {% endblock %}
