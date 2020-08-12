@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Contest {{ contest.id }}{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+
+        <h1 class="mt-5">Contest n°{{ contest.id }} : {{ contest.name }}</h1>
+
+
+        <div>{{ contest.name  }}</div><br />
+        <div>{{ contest.urlPost  }}</div>
+
+        <br>
+        <div> Date Tirage : {{ contest.dateDraw | date("d/m/Y - H:i:s") }}</div>
+        <br>
+        <div> Finished : {{ contest.finished }}</div>
+        <div> Winner : {{ contest.winnerInstagram }}</div>
+
+
+
+
+        {% if contest.finished == false and owner is defined and owner %}<a class="btn btn-primary" href="{{ path ('instagram.execute', {'id' : contest.id})}}">Exécuter le tirage</a>{% endif  %}
+
+    </div>
+{% endblock %}

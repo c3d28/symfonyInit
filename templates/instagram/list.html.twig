@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container-fluid mt-5">
+
+        <h1>Liste des Instagrams contest   </h1>
+            <div>
+                <b>Mes draws créés : </b>
+                <ul class="list-group col-md-6">
+                    {% for contest in instagramContests %}
+                            <tr>
+                                <li class="list-group-item">
+                                    {{ contest.id }} - {{contest.name}} <a href="{{path('instagram.id',{id: contest.id})}}">Voir</a>
+                                    <div id="status" class="float-right">
+                                        {%  if contest.finished %}<span class="badge badge-danger">Terminé</span>{% endif  %}
+                                        {%  if contest.finished == false %}<span class="badge badge-success">En cours</span>{% endif  %}
+                                    </div>
+                                </li>
+                            </tr>
+                    {% endfor %}
+                </ul>
+            </div>
+    </div>
+
+{% endblock %}

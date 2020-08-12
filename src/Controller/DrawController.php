@@ -5,12 +5,16 @@ namespace App\Controller;
 
 use App\Entity\Choice;
 use App\Entity\Draw;
+use App\Entity\InstagramContest;
 use App\Entity\Participant;
 use App\Form\DrawType;
+use App\Form\InstagramType;
 use App\Repository\ChoiceRepository;
 use App\Repository\DrawRepository;
 use App\Repository\ParticipantRepository;
 use DateTime;
+use InstagramScraper\Instagram;
+use InstagramScraper\Model\Media;
 use phpDocumentor\Reflection\Types\Integer;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -81,6 +85,18 @@ class DrawController extends AbstractController
 
         dump($return);*/
 
+        //$instagram = Instagram::withCredentials('drawbow', 'Specom28');
+        //$instagram->login();
+        //
+        //$account = $instagram->getAccountById(3);
+
+        $instagram = new \InstagramScraper\Instagram();
+        $media = $instagram->getMediaByUrl('https://www.instagram.com/p/CDd6dokC_Mj');
+        $comments = $instagram->getMediaCommentsById($media->getId(),1000);
+
+        $this->loopAllPageComments($media);
+        dump(       $comments);
+
         return $this->render('draw/list.html.twig', [
             'controller_name' => 'DrawController',
             'participants' => $partipants,
@@ -89,30 +105,11 @@ class DrawController extends AbstractController
         ]);
     }
 
-
-    public function rudr_instagram_api_curl_connect( $api_url ){
-
-            $params = array( // post parmas
-                'client_id' => '745188716257639',
-                'client_secret' => '0df763cd788f67226c248abef167210c',
-                'grant_type' => 'authorization_code',
-                'redirect_uri' => 'http://instagram.com',
-            );
-
-            // call IG access_token endpoint with params to get a valid access token
-            $ch = curl_init( 'https://api.instagram.com/oauth/access_token' );
-            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-            curl_setopt( $ch, CURLOPT_CUSTOMREQUEST, 'POST' );
-            curl_setopt( $ch, CURLOPT_POSTFIELDS, $params );
-            curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, FALSE );
-            $response_raw = curl_exec( $ch );
-            $response = json_decode( $response_raw, true );
-            curl_close( $ch );
-
-            // display our repsonse from IG
-            dump( $response );
-            return $response;
-
+    public function loopAllPageComments(Media $media){
+        $listComments = $media->getComments(); // 24Maxbypage
+        dump($listComments);
+        $media->getCommentsNextPage();
+        dump($media->getCommentsNextPage());
 
     }
 
@@ -203,6 +200,33 @@ class DrawController extends AbstractController
         }
         return $this->redirectToRoute('draw.id',array('id' => $draw->getId()));
     }
+
+
+
+    /**
+     * @Route("/draw/instagram/edit", name="draw.instagram.edit")
+     * @param EntityManagerInterface $em
+     * @param Draw $draw
+     * @param Request $request
+     * @return Response
+     */
+    public function editInstagram(EntityManagerInterface $em, Request $request): Response
+    {
+
+        $draw = new Draw();
+        $form = $this->createForm(DrawType::class, $draw);
+        $form->handleRequest($request);
+        $user = $this->getUser();
+        if ($form->isSubmitted() && $form->isValid()) {
+
+        }
+
+
+        return $this->render('draw/instagram.edit.html.twig', [
+            'controller_name' => 'DrawController'
+        ]);
+    }
+
 
     /**
      * @Route("/draw", name="draw.new")

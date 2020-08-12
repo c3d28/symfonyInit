@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Create Draw{% endblock %}
+
+{% block body %}
+    <div class="container-fluid mt-5">
+
+        <h1>Créer un Tirage au sort concours Instagram</h1>
+        {{ form_start(form) }}
+            {{ form_rest(form)}}
+        <button class="btn btn-primary mt-2"> Créer </button>
+        {{ form_end(form) }}
+
+
+    </div>
+
+{% endblock %}
+
