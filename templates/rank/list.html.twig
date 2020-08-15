@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container-fluid mt-5">
+
+        <h1>Liste des Classements effectués    </h1>
+            <div>
+                <ul class="list-group col-md-6">
+                    {% for rank in ranks %}
+                            <tr>
+                                <li class="list-group-item">
+                                    {{ rank.id }} - {{rank.name}} <a href="{{path('rank.id',{id: rank.id})}}">Voir</a>
+                                    <div id="status" class="float-right">
+                                        {%  if rank.finished %}<span class="badge badge-danger">Terminé</span>{% endif  %}
+                                        {%  if rank.finished == false %}<span class="badge badge-success">En cours</span>{% endif  %}
+                                    </div>
+                                </li>
+                            </tr>
+                    {% endfor %}
+                </ul>
+            </div>
+
+
+    </div>
+
+{% endblock %}

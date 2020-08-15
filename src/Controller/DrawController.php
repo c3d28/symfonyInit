@@ -4,11 +4,15 @@ namespace App\Controller;
 
 
 use App\Entity\Choice;
+use App\Entity\ChoicePosition;
+
 use App\Entity\Draw;
 use App\Entity\InstagramContest;
 use App\Entity\Participant;
+use App\Entity\Rank;
 use App\Form\DrawType;
 use App\Form\InstagramType;
+use App\Form\RankType;
 use App\Repository\ChoiceRepository;
 use App\Repository\DrawRepository;
 use App\Repository\ParticipantRepository;
@@ -78,39 +82,12 @@ class DrawController extends AbstractController
         $drawsOwner = $this->repository->findBy(
             ['id' => $listDrawOwner]);
 
-
-        /*$access_token = 'IGQVJVSVJvUUExNU1xU0ZAWQjlWOWVjbURZAb1BGMEp2akxsMWJRSm04cFVxS2ljWFJGZA0gtZAnoyR3Q4Wk1OUVdHeGd1ampidW5BWGI3VEY5R09KVEJlQ1o0c0doeTF3cWZAiUEdxQkpiVXg5SkRXZAlljbwZDZD';
-        $tag = 'c3d28';
-        $return = $this->rudr_instagram_api_curl_connect('https://api.instagram.com/v1/tags/' . $tag . '/media/recent?access_token=' . $access_token);
-
-        dump($return);*/
-
-        //$instagram = Instagram::withCredentials('drawbow', 'Specom28');
-        //$instagram->login();
-        //
-        //$account = $instagram->getAccountById(3);
-
-        $instagram = new \InstagramScraper\Instagram();
-        $media = $instagram->getMediaByUrl('https://www.instagram.com/p/CDd6dokC_Mj');
-        $comments = $instagram->getMediaCommentsById($media->getId(),1000);
-
-        $this->loopAllPageComments($media);
-        dump(       $comments);
-
         return $this->render('draw/list.html.twig', [
             'controller_name' => 'DrawController',
             'participants' => $partipants,
             'drawsOther' => $drawsOther,
             'drawsOwner' => $drawsOwner
         ]);
-    }
-
-    public function loopAllPageComments(Media $media){
-        $listComments = $media->getComments(); // 24Maxbypage
-        dump($listComments);
-        $media->getCommentsNextPage();
-        dump($media->getCommentsNextPage());
-
     }
 
     /**
@@ -290,6 +267,63 @@ class DrawController extends AbstractController
         }
 
         return $this->render('draw/index.html.twig', [
+            'controller_name' => 'DrawController',
+            'form' => $form->createView()
+        ]);
+    }
+
+
+    /**
+     * @Route("/rank", name="draw.rank")
+     * @param EntityManagerInterface $em
+     * @param Draw $draw
+     * @param Request $request
+     * @return Response
+     */
+    public function newRank(EntityManagerInterface $em, Request $request): Response
+    {
+
+        $rank = new Rank();
+        $form = $this->createForm(RankType::class, $rank);
+        $form->handleRequest($request);
+        $user = $this->getUser();
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $rank->setDateCreation(new \DateTime('now'));
+            $rank->setDateDraw(new \DateTime('now'));
+
+            $rank->setOwner($this->getUser());
+            $this->em->persist($rank);
+            $this->em->flush();
+
+            $em->persist($rank);
+            $em->flush();
+
+            if ($request->get("choices") != null) {
+                $choices = $request->get("choices");
+                $choices_arr = explode(",", $choices);
+
+                foreach ($choices_arr as $choiceString) {
+                    $choice = new ChoicePosition();
+                    $choice->setText($choiceString);
+                    $choice->setRank($rank);
+                    $em->persist($choice);
+                    $em->flush();
+                }
+            }
+            $this->addFlash('success', 'Tirage de classement créé ! ');
+
+
+            $response = $this->forward('App\Controller\MailController::sendEmail', [
+                'receiver' => 'c5dr9k@gmail.com',
+                'subject' => 'DraftBox - Tirage de classement successif créé',
+                'text' => 'Votre tirage au sort a été créé avec pour id rank: '. $rank->getId()
+            ]);
+
+
+        }
+
+        return $this->render('rank/index.html.twig', [
             'controller_name' => 'DrawController',
             'form' => $form->createView()
         ]);

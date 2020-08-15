@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Rank {{ rank.id }}{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+
+        <h1 class="mt-5">Rank n°{{ rank.id }} : {{ rank.name }}</h1>
+
+
+        <div>{{ rank.name  }}</div>
+
+        <br>
+
+        <h2>Liste des choix </h2>
+        <div class="">
+            <ul class="list-group">
+
+                {% for choice in choices %}
+                    <tr>
+                        <li class="list-group-item"> {{ choice.text}}  </li>
+                    </tr>
+                {% endfor %}
+            </ul>
+        </div>
+
+        {% if rank.finished == false and owner is defined and owner %}<a class="btn btn-primary" href="{{ path ('rank.execute', {'id' : rank.id})}}">Exécuter le tirage</a>{% endif  %}
+
+        <h2>Classement en cours </h2>
+        <div class="">
+            <ul class="list-group">
+
+                {% for place in places %}
+                    <tr>
+                        <li class="list-group-item">{{ place.place }} : {{ place.text}}  </li>
+                    </tr>
+                {% endfor %}
+            </ul>
+        </div>
+
+
+    </div>
+{% endblock %}
