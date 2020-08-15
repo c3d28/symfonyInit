@@ -18,6 +18,7 @@ use InstagramScraper\Instagram;
 use InstagramScraper\Model\Comment;
 use InstagramScraper\Model\Media;
 use phpDocumentor\Reflection\Types\Integer;
+use Phpfastcache\Helper\Psr16Adapter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -59,18 +60,8 @@ class InstagramContestController extends AbstractController
             $instagramContests = $this->repository->findBy(['owner' => $this->getUser()]);
         }
 
-        dump($instagramContests);
 
-        /*$access_token = 'IGQVJVSVJvUUExNU1xU0ZAWQjlWOWVjbURZAb1BGMEp2akxsMWJRSm04cFVxS2ljWFJGZA0gtZAnoyR3Q4Wk1OUVdHeGd1ampidW5BWGI3VEY5R09KVEJlQ1o0c0doeTF3cWZAiUEdxQkpiVXg5SkRXZAlljbwZDZD';
-        $tag = 'c3d28';
-        $return = $this->rudr_instagram_api_curl_connect('https://api.instagram.com/v1/tags/' . $tag . '/media/recent?access_token=' . $access_token);
 
-        dump($return);*/
-
-        //$instagram = Instagram::withCredentials('drawbow', 'Specom28');
-        //$instagram->login();
-        //
-        //$account = $instagram->getAccountById(3);
 
         return $this->render('instagram/list.html.twig', [
             'controller_name' => 'InstagramController',
@@ -175,7 +166,10 @@ class InstagramContestController extends AbstractController
             ['id' => $id]
         );
 
-        $instagram = new \InstagramScraper\Instagram();
+        $instagram = \InstagramScraper\Instagram::withCredentials('drawboxfr', 'Specom28', new Psr16Adapter('Files'));
+        $instagram->login();
+        $instagram->saveSession();
+
         $media = $instagram->getMediaByUrl($contest->getUrlPost());
         $comments = $instagram->getMediaCommentsById($media->getId(),1000);
         $participants = [];
