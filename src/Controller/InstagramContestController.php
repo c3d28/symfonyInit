@@ -98,6 +98,8 @@ class InstagramContestController extends AbstractController
 
             $em->persist($instagramContest);
             $em->flush();
+
+            return $this->redirectToRoute("instagram.id",array('id'=> $instagramContest->getId()));
         }
 
         return $this->render('draw/instagram.html.twig', [
@@ -154,10 +156,11 @@ class InstagramContestController extends AbstractController
 
         $this->execute($em,$id);
 
-        return $this->render('home/index.html.twig', [
-            'message' => 'OK'
-        ]);
 
+        //return $this->redirectToRoute("instagram.id",array('id'=> $id));
+        return $this->render('instagram/info.html.twig', [
+            'controller_name' => 'InstagramContestController',
+        ]);
     }
 
     public function execute(EntityManagerInterface $em, int $id)
@@ -166,22 +169,28 @@ class InstagramContestController extends AbstractController
             ['id' => $id]
         );
 
-        $instagram = \InstagramScraper\Instagram::withCredentials('drawboxfr', 'Specom28', new Psr16Adapter('Files'));
+        $instagram = \InstagramScraper\Instagram::withCredentials('drawboxfr', 'DrawBoxFr2020', new Psr16Adapter('Files'));
         $instagram->login();
         $instagram->saveSession();
 
         $media = $instagram->getMediaByUrl($contest->getUrlPost());
-        $comments = $instagram->getMediaCommentsById($media->getId(),1000);
+        $comments = $instagram->getMediaCommentsById($media->getId(),10000);
         $participants = [];
+        $participantsUser = [];
 
         foreach ($comments as $comment){
             $participants[] = $comment->getOwner()->getUsername();
+            $participantsUser[] = $comment->getOwner();
+
         }
+        dump("before count : " . count($participants));
+        $participants = array_unique($participants);
+        dump("after count : " . count($participants));
 
         $rand_keys = array_rand( $participants,1);
         $winner = $participants[$rand_keys];
 
-        dump($participants);
+        dump($participantsUser);
         dump($winner);
 
         $contest->setWinnerInstagram($winner);
