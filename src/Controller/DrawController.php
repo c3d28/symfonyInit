@@ -28,6 +28,7 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class DrawController extends AbstractController
 {
@@ -112,6 +113,8 @@ class DrawController extends AbstractController
         $choices = $this->repoChoice->findBy(
             ['draw' => $draw]
         );
+
+
 
         $owner = false;
         foreach ($partipants as $part) {
@@ -339,6 +342,7 @@ class DrawController extends AbstractController
      */
     public function executeButton(EntityManagerInterface $em, int $id): Response
     {
+
         $this->execute($em,$id);
 
         return $this->render('home/index.html.twig', [
@@ -347,7 +351,8 @@ class DrawController extends AbstractController
 
     }
 
-    public function execute(EntityManagerInterface $em, int $id){
+    public function execute(EntityManagerInterface $em, int $id)
+    {
         $draw = $this->repository->findOneBy(
             ['id' => $id]
         );
@@ -360,49 +365,54 @@ class DrawController extends AbstractController
             ['draw' => $draw]
         );
 
+        $owner = $this->repoParti->findOwnerFromDraw($id);
+        dump($owner);
 
+        if ($this->getUser() == $owner->getUser()) {
+            switch ($draw->getType()) {
+                case 'unique':
+                    try {
+                        $this->executeUnique($em, $participants, $draw, $choices);
 
-        switch ($draw->getType()) {
-            case 'unique':
-                try {
-                    $this->executeUnique($em,$participants,$draw,$choices);
+                    } catch (\Exception $e) {
+                        $draw->setFinished(true);
+                        $em->persist($draw);
+                        $em->flush();
 
-                } catch (\Exception $e) {
+                    }
+
+                    break;
+                case 'all_participant':
+                    try {
+                        $this->executeAllParticipant($em, $participants, $draw, $choices);
+                    } catch (\Exception $e) {
+                        $draw->setFinished(true);
+                        $em->persist($draw);
+                        $em->flush();
+
+                    }
+                    break;
+                case 'all_gift':
+                    try {
+                        $this->executeAllGift($em, $participants, $draw, $choices);
+                    } catch (\Exception $e) {
+                        $draw->setFinished(true);
+                        $em->persist($draw);
+                        $em->flush();
+
+                    }
+                    break;
+                default :
                     $draw->setFinished(true);
                     $em->persist($draw);
                     $em->flush();
 
-                }
+                    break;
+            }
 
-                break;
-            case 'all_participant':
-                try{
-                    $this->executeAllParticipant($em,$participants,$draw,$choices);
-                } catch (\Exception $e) {
-                    $draw->setFinished(true);
-                    $em->persist($draw);
-                    $em->flush();
-
-                }
-                break;
-            case 'all_gift':
-                try {
-                    $this->executeAllGift($em, $participants, $draw, $choices);
-                } catch (\Exception $e) {
-                    $draw->setFinished(true);
-                    $em->persist($draw);
-                    $em->flush();
-
-                }
-                break;
-            default :
-                $draw->setFinished(true);
-                $em->persist($draw);
-                $em->flush();
-
-                break;
+        }else{
+            throw new AccessDeniedException();
         }
-
 
     }
 

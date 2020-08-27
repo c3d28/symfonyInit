@@ -157,10 +157,10 @@ class InstagramContestController extends AbstractController
         $this->execute($em,$id);
 
 
-        //return $this->redirectToRoute("instagram.id",array('id'=> $id));
-        return $this->render('instagram/info.html.twig', [
-            'controller_name' => 'InstagramContestController',
-        ]);
+        return $this->redirectToRoute("instagram.id",array('id'=> $id));
+        //return $this->render('instagram/info.html.twig', [
+        //    'controller_name' => 'InstagramContestController',
+        //]);
     }
 
     public function execute(EntityManagerInterface $em, int $id)
@@ -173,28 +173,43 @@ class InstagramContestController extends AbstractController
         $instagram->login();
         $instagram->saveSession();
 
+
+
         $media = $instagram->getMediaByUrl($contest->getUrlPost());
         $comments = $instagram->getMediaCommentsById($media->getId(),10000);
         $participants = [];
-        $participantsUser = [];
 
         foreach ($comments as $comment){
-            $participants[] = $comment->getOwner()->getUsername();
-            $participantsUser[] = $comment->getOwner();
+            $flagCanAdd = true;
+            if($contest->getHashtag() != null){
+                //i have to check if hashtag is in the text
+                if(strpos($comment->getText(), $contest->getHashtag())){
+                    $flagCanAdd = true;
+                }else{
+                    $flagCanAdd = false;
+                }
+            }
 
+            if($flagCanAdd){
+                $participants[] = $comment->getOwner()->getUsername();
+
+            }
         }
-        dump("before count : " . count($participants));
         $participants = array_unique($participants);
-        dump("after count : " . count($participants));
+
+        $accountUsername = $instagram->getAccount($media->getOwner()->getUsername());
+
+        dump($accountUsername);
+        //remove the owner of media
+        if (($key = array_search($accountUsername, $participants)) !== false) {
+            dump($key);
+            unset($participants[$key]);
+        }
+        dump($participants);
 
         $rand_keys = array_rand( $participants,1);
         $winner = $participants[$rand_keys];
 
-        dump($participantsUser);
-        dump($winner);
-
-        $contest->setWinnerInstagram($winner);
-        $contest->setFinished(true);
 
         $this->em->persist($contest);
         $this->em->flush();

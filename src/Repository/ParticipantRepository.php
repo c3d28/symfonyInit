@@ -47,4 +47,16 @@ class ParticipantRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    public function findOwnerFromDraw($idDraw): ?Participant
+    {
+        $participant = $this->createQueryBuilder('p')
+            ->andWhere('p.owner = :owner and p.draw = :idDraw')
+            ->setParameter('owner', true)
+            ->setParameter('idDraw',$idDraw)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        return $participant;
+    }
 }

@@ -56,6 +56,11 @@ class InstagramContest
      */
     private $owner;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $hashtag;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -153,6 +158,18 @@ class InstagramContest
     public function setOwner(User $user): self
     {
         $this->owner = $user;
+
+        return $this;
+    }
+
+    public function getHashtag(): ?string
+    {
+        return $this->hashtag;
+    }
+
+    public function setHashtag(?string $hashtag): self
+    {
+        $this->hashtag = $hashtag;
 
         return $this;
     }

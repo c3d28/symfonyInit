@@ -3,16 +3,33 @@
 {% block title %}Rank {{ rank.id }}{% endblock %}
 
 {% block body %}
+
+
+
+
     <div class="container mt-4">
 
         <h1 class="mt-5">Rank n°{{ rank.id }} : {{ rank.name }}</h1>
 
 
-        <div>{{ rank.name  }}</div>
+        <div>{{ rank.name  }}
+
+            {% if owner is defined and owner %}
+                <div class="m-2 float-right">
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addChoice">
+                        Ajouter un choix
+                    </button>
+                </div>
+
+            {% endif %}
+        </div>
 
         <br>
 
         <h2>Liste des choix </h2>
+
+
+
         <div class="">
             <ul class="list-group">
 
@@ -38,6 +55,37 @@
             </ul>
         </div>
 
+
+    </div>
+
+
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="addChoice" tabindex="-1" role="dialog" aria-labelledby="addChoice" aria-hidden="true">
+        {{ form_start(form, {'action': path('rank.addChoice', { 'id': rank.id })}) }}
+
+        <div class="modal-dialog" role="document">
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Ajouter un choix à la liste</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        Close
+                    </button>
+                </div>
+                <div class="modal-body">
+                    {{ form_rest(form)}}
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+
+        </div>
+        {{ form_end(form) }}
 
     </div>
 {% endblock %}

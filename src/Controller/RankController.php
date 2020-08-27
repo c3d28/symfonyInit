@@ -10,6 +10,7 @@ use App\Entity\Draw;
 use App\Entity\InstagramContest;
 use App\Entity\Participant;
 use App\Entity\Rank;
+use App\Form\ChoicePositionType;
 use App\Form\DrawType;
 use App\Form\InstagramType;
 use App\Form\RankType;
@@ -60,7 +61,7 @@ class RankController extends AbstractController
      * @param $ranks
      * @return Response
      */
-    public function displayDraw(EntityManagerInterface $em,int $id): Response
+    public function displayDraw(EntityManagerInterface $em,int $id,Request $request): Response
     {
 
 
@@ -72,7 +73,9 @@ class RankController extends AbstractController
             ['rank' => $rank]
         );
 
-        $ranking = $this->repoChoice->findByRanking($rank->getId());
+        $choice = new ChoicePosition();
+        $form = $this->createForm(ChoicePositionType::class, $choice);
+        $form->handleRequest($request);
 
         $owner = false;
         if($rank->getOwner() == $this->getUser()){
@@ -80,13 +83,13 @@ class RankController extends AbstractController
         }
 
         $places = $this->repoChoice->findByRankingByPlace($rank->getId());
-        dump($places);
         return $this->render('rank/info.html.twig', [
             'controller_name' => 'RankController',
             'rank' => $rank,
             'owner' => $owner,
             'choices' => $choices,
-            'places' => $places
+            'places' => $places,
+            'form' => $form->createView()
         ]);
     }
 
@@ -170,17 +173,13 @@ class RankController extends AbstractController
         $rand_keys = array_rand( $positions,1);
         $nextWin = $positions[$rand_keys];
         $maxPlace = $this->repoChoice->getMaxPosition($id);
-        dump("max place = " . $maxPlace);
 
         $choicePositionToEdit = $this->repoChoice->findBy(['id' => $nextWin]);
         if($maxPlace == NULL || $maxPlace == "null" || $maxPlace == ""){
             $position = 1;
-            dump("ici 1 = " . $position);
 
         }else {
             $position = $maxPlace + 1;
-            dump($position);
-
         }
         $choicePosition = $choicePositionToEdit[0];
         $choicePosition->setPlace($position);
@@ -192,7 +191,6 @@ class RankController extends AbstractController
         // check if last
         dump($this->repoChoice->countAllChoice($id));
         if($position == $this->repoChoice->countAllChoice($id) ){
-            dump("last");
             $rank = $this->repoRank->findOneBy(["id"=>$id]);
             $rank->setFinished(true);
             $em->persist($rank);
@@ -212,7 +210,6 @@ class RankController extends AbstractController
      */
     public function list(EntityManagerInterface $em): Response
     {
-
         $ranks = $this->repoRank->findBy(
             ['owner' => $this->getUser()]);
 
@@ -220,6 +217,37 @@ class RankController extends AbstractController
             'controller_name' => 'RankController',
             'ranks' => $ranks
         ]);
+    }
+
+    /**
+     * @Route("/rank/addChoice/{id}/", name="rank.addChoice")
+     * @param EntityManagerInterface $em
+     * @param Request $request
+     * @param $ranks
+     * @return Response
+     */
+    public function addChoice(EntityManagerInterface $em,Request $request,int $id): Response{
+
+        $rank = $this->repoRank->findOneBy(
+            ['id' => $id]
+        );
+
+        $choice = new ChoicePosition();
+        $form = $this->createForm(ChoicePositionType::class, $choice);
+        $form->handleRequest($request);
+
+        if($form->isSubmitted() && $form->isValid() ){
+            $choice->setRank($rank);
+            $rank->setFinished(0);
+            $em->persist($choice);
+            $em->persist($rank);
+
+            $em->flush();
+        }else{
+            dump( $request);
+        }
+
+        return $this->redirectToRoute('rank.id', ['id' => $id]);
     }
 
 }
