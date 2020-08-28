@@ -370,7 +370,6 @@ class DrawController extends AbstractController
         dump($this->getUser() == $owner->getUser());
         dump("ello");
 
-        if ($this->getUser() == $owner->getUser()) {
             switch ($draw->getType()) {
                 case 'unique':
                     try {
@@ -412,9 +411,7 @@ class DrawController extends AbstractController
                     break;
             }
 
-        }else{
-            throw new AccessDeniedException();
-        }
+
 
     }
 
