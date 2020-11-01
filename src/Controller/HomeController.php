@@ -5,14 +5,27 @@ namespace App\Controller;
 use App\Entity\Deal;
 use App\Entity\User;
 
+use App\Services\FutDb;
+
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
+
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+    use Symfony\Component\Serializer\Encoder\XmlEncoder;
+    use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+    use Symfony\Component\Serializer\Serializer;
 
 class HomeController extends AbstractController
 {
+
+     public FutDb $futDbService;
+
     /**
      * @Route("/home", name="home")
      */
@@ -26,7 +39,7 @@ class HomeController extends AbstractController
     	$em = $this->getDoctrine()->getManager();
     	$em->persist($deal);
     	$em->flush();
-        
+
         $user = new User();
     	$user->setUsername('admin2');
         $plainPassword = 'admin';
@@ -47,4 +60,5 @@ class HomeController extends AbstractController
             'deals' => $deals,
         ]);
     }
+
 }
