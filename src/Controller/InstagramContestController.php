@@ -84,15 +84,11 @@ class InstagramContestController extends AbstractController
         $form->handleRequest($request);
         $user = $this->getUser();
         if ($form->isSubmitted() && $form->isValid()) {
-            dump($form);
-
-            dump($request);
             $instagramContest->setDateCreation(new \DateTime('now'));
             $instagramContest->setDate("date");
             $instagramContest->setFinished(false);
             $instagramContest->setWinnerInstagram("");
             if ($user!= null) {
-                dump($user);
                 $instagramContest->setOwner($user);
             }
 
@@ -140,7 +136,6 @@ class InstagramContestController extends AbstractController
         $media = $instagram->getMediaByUrl('https://www.instagram.com/p/CDd6dokC_Mj');
         $comments = $instagram->getMediaCommentsById($media->getId(),1000);
 
-        dump(       $comments);
     }
 
     /**
@@ -199,13 +194,10 @@ class InstagramContestController extends AbstractController
 
         $accountUsername = $instagram->getAccount($media->getOwner()->getUsername());
 
-        dump($accountUsername);
         //remove the owner of media
         if (($key = array_search($accountUsername, $participants)) !== false) {
-            dump($key);
             unset($participants[$key]);
         }
-        dump($participants);
 
         $rand_keys = array_rand( $participants,1);
         $winner = $participants[$rand_keys];

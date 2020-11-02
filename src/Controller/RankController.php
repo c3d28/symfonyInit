@@ -189,7 +189,6 @@ class RankController extends AbstractController
         $em->flush();
 
         // check if last
-        dump($this->repoChoice->countAllChoice($id));
         if($position == $this->repoChoice->countAllChoice($id) ){
             $rank = $this->repoRank->findOneBy(["id"=>$id]);
             $rank->setFinished(true);
@@ -243,8 +242,6 @@ class RankController extends AbstractController
             $em->persist($rank);
 
             $em->flush();
-        }else{
-            dump( $request);
         }
 
         return $this->redirectToRoute('rank.id', ['id' => $id]);

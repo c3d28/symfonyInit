@@ -54,7 +54,6 @@ class AdminUserController extends AbstractController
         $form = $this->createForm(EditUserType::class,$user);
         $form->handleRequest($request);
 
-        dump($user);
         $encoded = $encoder->encodePassword($user, $user->getPassword());
 
 

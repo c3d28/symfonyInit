@@ -366,9 +366,6 @@ class DrawController extends AbstractController
         );
 
         $owner = $this->repoParti->findOwnerFromDraw($id);
-        dump($owner);
-        dump($this->getUser() == $owner->getUser());
-        dump("ello");
 
             switch ($draw->getType()) {
                 case 'unique':

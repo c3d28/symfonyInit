@@ -44,7 +44,6 @@ class ChoicePositionRepository extends ServiceEntityRepository
             ->setParameter('val',$idRank)
             ->getQuery()
             ->getSingleScalarResult();
-        dump($qb);
         return $qb;
     }
 

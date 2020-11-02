@@ -31,8 +31,6 @@ class FutDb
                 array_push($jsonCompil,$result);
         }
 
-        dump($jsonCompil);
-
         return json_encode($jsonCompil);
 
     }
@@ -40,7 +38,6 @@ class FutDb
 
     public function fetchClubs(int $page, int $limit){
 
-        dump('before '.$page);
         $response = $this->client->request(
             'GET',
             'https://futdb.app/api/clubs?page='.$page.'&limit='.$limit,
@@ -58,13 +55,11 @@ class FutDb
 
         $jsonArr = json_decode($content, true);
         $jsonCompil = $jsonArr['items'];
-        dump($jsonCompil) ;
         return $jsonCompil;
     }
 
     public function fetchLeagues(int $page, int $limit){
 
-        dump('before '.$page);
         $response = $this->client->request(
             'GET',
             'https://futdb.app/api/leagues?page='.$page.'&limit='.$limit,
@@ -82,7 +77,6 @@ class FutDb
 
         $jsonArr = json_decode($content, true);
         $jsonCompil = $jsonArr['items'];
-        dump($jsonCompil) ;
         return $jsonCompil;
     }
 

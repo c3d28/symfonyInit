@@ -36,13 +36,11 @@ class PCMController extends AbstractController
         $cyclist = $this->repo->findOneBy([
             'IDCyclist' => $idPCM
         ]);
-        dump($cyclist);
 
         $team = $this->teamRepo->findOneBy([
             'IDTeam' => $cyclist->getFkIDteam()
         ]
         );
-        dump($team);
 
         return $this->render('pcm/fiche.html.twig', [
             'controller_name' => 'PCMController',
@@ -115,7 +113,6 @@ class PCMController extends AbstractController
                 }
             }
 
-            dump($theTeam["IDteam"]);
             $elem = $repo->findOneBy([
                 'IDTeam' => $theTeam["IDteam"]
             ]);
@@ -131,7 +128,6 @@ class PCMController extends AbstractController
 
                 $em->persist($pcmTeam);
                 $em->flush();
-                dump("Team created");
             }
         }
         return $this->render('home/index.html.twig', [
@@ -210,7 +206,6 @@ class PCMController extends AbstractController
 
                 $em->persist($pcmCyclist);
                 $em->flush();
-                dump("Cyclist created");
             }
         }
     }

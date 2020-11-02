@@ -38,8 +38,6 @@ $     */
             foreach ($listClub as $club){
                 $teamFifa = $serializer->deserialize(json_encode($club), TeamFifa::class, 'json');
 
-                dump($teamFifa);
-
                 $entity = $this->repo->findOneBy([
                     'name' => $teamFifa->getName()
                 ]);
