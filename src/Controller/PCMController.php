@@ -4,14 +4,8 @@ namespace App\Controller;
 
 use App\Entity\PcmCyclists;
 use App\Entity\PcmTeams;
-use App\Entity\TeamFifa;
-use App\Repository\ChoiceRepository;
-use App\Repository\DrawRepository;
-use App\Repository\ParticipantRepository;
 use App\Repository\PcmCyclistsRepository;
 use App\Repository\PcmTeamsRepository;
-use App\Repository\TeamFifaRepository;
-use App\Services\FutDb;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
