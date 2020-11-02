@@ -57,6 +57,8 @@ class PCMController extends AbstractController
 
     /**
      * @Route("/importDataPCM", name="import_data_pcm",methods={"GET"})
+     * @param EntityManagerInterface $em
+     * @param PcmCyclistsRepository $repo
      */
     public function importCyclist(EntityManagerInterface $em, PcmCyclistsRepository $repo)
     {
@@ -81,6 +83,8 @@ class PCMController extends AbstractController
 
     /**
      * @Route("/importTeamPCM", name="import_team_pcm",methods={"GET"})
+     * @param EntityManagerInterface $em
+     * @param PcmTeamsRepository $repo
      */
     public function importTeamPCM(EntityManagerInterface $em, PcmTeamsRepository $repo)
     {
