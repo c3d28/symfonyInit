@@ -2,9 +2,13 @@
 
 namespace App\Controller;
 
+use App\Entity\PCMCountry;
 use App\Entity\PcmCyclists;
+use App\Entity\PCMRegions;
 use App\Entity\PcmTeams;
+use App\Repository\PCMCountryRepository;
 use App\Repository\PcmCyclistsRepository;
+use App\Repository\PCMRegionsRepository;
 use App\Repository\PcmTeamsRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,10 +21,12 @@ class PCMController extends AbstractController
 {
 
 
-    public function __construct(PcmCyclistsRepository $repository, PcmTeamsRepository $teamRepo)
+    public function __construct(PcmCyclistsRepository $repository, PcmTeamsRepository $teamRepo, PCMCountryRepository $countryRepo , PCMRegionsRepository $regionRepo)
     {
         $this->repo = $repository;
         $this->teamRepo = $teamRepo;
+        $this->regionRepo = $regionRepo;
+        $this->countryRepo = $countryRepo;
 
     }
 
@@ -42,10 +48,60 @@ class PCMController extends AbstractController
         ]
         );
 
+        $nation = $this->regionRepo->findOneBy([
+            'IdRegion' => $cyclist->getFkIDregion()
+            ]
+        );
+
         return $this->render('pcm/fiche.html.twig', [
             'controller_name' => 'PCMController',
             'cyclist' => $cyclist,
-            'team' => $team
+            'team' => $team,
+            'nation' => $nation
+        ]);
+    }
+
+    /**
+     * @Route("/teams", name="listTeam")
+     * @param EntityManagerInterface $em
+     * @param Request $request
+     * @param $ranks
+     * @return Response
+     */
+    public function displayListTeam(EntityManagerInterface $em,Request $request): Response
+    {
+
+        $teams = $this->teamRepo->findAll();
+
+        return $this->render('pcm/listTeam.html.twig', [
+            'controller_name' => 'PCMController',
+            'teams' => $teams
+        ]);
+    }
+
+
+    /**
+     * @Route("/cyclists/{idPCMTeam}/", name="cyclists.idPCMTeam")
+     * @param EntityManagerInterface $em
+     * @param Request $request
+     * @param $ranks
+     * @return Response
+     */
+    public function displayTeam(EntityManagerInterface $em,int $idPCMTeam,Request $request): Response
+    {
+        $cyclists = $this->repo->findBy([
+            'fkIDteam' => $idPCMTeam
+        ]);
+
+        $team = $this->teamRepo->findOneBy([
+                'IDTeam' => $idPCMTeam
+            ]
+        );
+
+        return $this->render('pcm/ficheTeam.html.twig', [
+            'controller_name' => 'PCMController',
+            'cyclists' => $cyclists,
+            'team' => $team,
         ]);
     }
 
@@ -208,6 +264,122 @@ class PCMController extends AbstractController
                 $em->flush();
             }
         }
+    }
+
+    /**
+     * @Route("/importRegionPCM", name="import_region_pcm",methods={"GET"})
+     * @param EntityManagerInterface $em
+     * @param PcmTeamsRepository $repo
+     */
+    public function importRegionPCM(EntityManagerInterface $em, PCMRegionsRepository $repo)
+    {
+
+        $crawler = new Crawler();
+        $crawler->addXmlContent(file_get_contents('STA_region.xml'));
+        $results = $crawler->filter("NewDataSet");
+
+        $crawler = $crawler->filter("NewDataSet > STA_region");
+
+        $regions = $crawler->each(
+            function (Crawler $node, $i) {
+                $rowTeam = $node->children()->each(
+                    function (Crawler $node2,$i){
+                        $name = $node2->first()->nodeName();
+                        $value = $node2->first()->text();
+                        return array($name => $value);
+                    });
+                return $rowTeam;
+            }
+        );
+
+        foreach ($regions as $region){
+            $theRegion = array();
+            foreach ($region as $ligne) {
+                foreach ($ligne as $key => $value) {
+                    $theRegion[$key] = $value;
+                }
+            }
+
+            $elem = $repo->findOneBy([
+                'IdRegion' => $theRegion["IDregion"]
+            ]);
+
+            if($elem == null){
+                $pcmRegion = new PCMRegions();
+
+                if(!array_key_exists("fkIDcountry",$theRegion) ){
+                    $theRegion["fkIDcountry"] = -100;
+                }
+                $pcmRegion->setIdRegion($theRegion["IDregion"]);
+                $pcmRegion->setName($theRegion["CONSTANT"]);
+                $pcmRegion->setFkIDCountry($theRegion["fkIDcountry"]);
+
+                $em->persist($pcmRegion);
+                $em->flush();
+            }
+        }
+        return $this->render('home/index.html.twig', [
+            'controller_name' => 'HomeController'
+        ]);
+
+    }
+
+    /**
+     * @Route("/importCountryPCM", name="import_country_pcm",methods={"GET"})
+     * @param EntityManagerInterface $em
+     * @param PcmTeamsRepository $repo
+     */
+    public function importCountryPCM(EntityManagerInterface $em, PCMRegionsRepository $repo)
+    {
+
+        $crawler = new Crawler();
+        $crawler->addXmlContent(file_get_contents('STA_country.xml'));
+        $results = $crawler->filter("NewDataSet");
+
+        $crawler = $crawler->filter("NewDataSet > STA_country");
+
+        $regions = $crawler->each(
+            function (Crawler $node, $i) {
+                $rowTeam = $node->children()->each(
+                    function (Crawler $node2,$i){
+                        $name = $node2->first()->nodeName();
+                        $value = $node2->first()->text();
+                        return array($name => $value);
+                    });
+                return $rowTeam;
+            }
+        );
+
+        foreach ($regions as $region){
+            $theRegion = array();
+            foreach ($region as $ligne) {
+                foreach ($ligne as $key => $value) {
+                    $theRegion[$key] = $value;
+                }
+            }
+
+            $elem = $repo->findOneBy([
+                'IdRegion' => $theRegion["IDcountry"]
+            ]);
+
+            if($elem == null){
+                $pcmCountry = new PCMCountry();
+
+                if(!array_key_exists("IDcountry",$theRegion) ){
+                    $theRegion["IDcountry"] = -100;
+                }
+                $pcmCountry->setIDcountry($theRegion["IDcountry"]);
+                $pcmCountry->setCONSTANT($theRegion["CONSTANT"]);
+                $pcmCountry->setGeneSzFlag($theRegion["gene_sz_flag"]);
+
+                $em->persist($pcmCountry);
+                $em->flush();
+            }
+        }
+        return $this->render('home/index.html.twig', [
+            'controller_name' => 'HomeController'
+        ]);
+
     }
 
 

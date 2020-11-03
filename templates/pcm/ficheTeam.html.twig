@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} {{ team.name }}{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+
+        <h1 class="mt-5">{{ team.name }}</h1>
+
+        <div>
+            <span class="font-weight-bold">Team</span> : {{ team.name }}
+        </div>
+
+        <ul>
+            {% for cyclist in cyclists %}
+                <li><a href="{{path('cyclist.idPCM',{idPCM: cyclist.IDCyclist})}}">{{ cyclist.firstName }} {{ cyclist.lastName }}</a></li>
+            {% endfor %}
+        </ul>
+
+    </div>
+{% endblock %}

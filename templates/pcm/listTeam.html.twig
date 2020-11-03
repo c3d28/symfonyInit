@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} Liste des équipes{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+
+        <h1 class="mt-5">Liste des Equipes</h1>
+
+        <ul>
+            {% for team in teams %}
+                <li><a href="{{path('cyclists.idPCMTeam',{idPCMTeam: team.IDTeam})}}">{{ team.name }}</a></li>
+            {% endfor %}
+        </ul>
+
+    </div>
+{% endblock %}
