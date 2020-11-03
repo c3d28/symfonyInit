@@ -7,11 +7,14 @@
 
         <h1 class="mt-5">Liste des Equipes</h1>
 
-        <ul>
-            {% for team in teams %}
-                <li><a href="{{path('cyclists.idPCMTeam',{idPCMTeam: team.IDTeam})}}">{{ team.name }}</a></li>
-            {% endfor %}
-        </ul>
+        <div class="col-md-4">
+            <ul class="list-group list-team">
+                {% for team in teams %}
+                    <li class="list-group-item"><a href="{{path('cyclists.idPCMTeam',{idPCMTeam: team.IDTeam})}}">{{ team.name }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+
 
     </div>
 {% endblock %}
