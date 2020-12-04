@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Christmas {{ christmas.id }}{% endblock %}
+
+{% block body %}
+
+    <div class="container mt-4">
+
+        <h1 class="mt-5"> n°{{ christmas.id }} : {{ christmas.name }}</h1>
+
+        <div>{{ christmas.name  }}
+
+            {% if owner is defined and owner %}
+                <div class="m-2 float-right">
+                    <button type="button" class="btn btn-primary displayResults">
+                        Afficher les résultats
+                    </button>
+                    <button type="button" class="btn btn-primary hiddenResults">
+                        Masquer les résultats
+                    </button>
+                </div>
+            {% endif %}
+        </div>
+
+        <br>
+
+        <h2>Liste des choix </h2>
+
+
+
+        <div class="">
+            <ul class="list-group">
+
+                {% for choice in choices %}
+                    <tr>
+                        <li class="list-group-item"> {{ choice.text}} <span class="giftTo" > offre un cadeau à {{ choice.giftTo }}</span> </li>
+                    </tr>
+                {% endfor %}
+            </ul>
+        </div>
+
+        {% if christmas.finished == false and owner is defined and owner %}<a class="btn btn-primary" href="{{ path ('christmas.execute', {'id' : christmas.id})}}">Exécuter le tirage</a>{% endif  %}
+
+
+
+    </div>
+
+{% endblock %}
+
+

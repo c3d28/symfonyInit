@@ -515,7 +515,6 @@ class DrawController extends AbstractController
      */
     public function checkAndExecute(EntityManagerInterface $em)
     {
-
         //get all draw not finished and date draw before now
         $list = $this->repository->findDrawToExecute();
 
@@ -524,4 +523,5 @@ class DrawController extends AbstractController
         }
         return $this->render('admin/index.html.twig');
     }
+
 }

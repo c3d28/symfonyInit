@@ -27,7 +27,7 @@ class MailController extends AbstractController
         $message = (new \Swift_Message($subject))
             ->setFrom(SENDER)
             ->setTo($receiver)
-            ->setBody($text);
+            ->setBody($text, 'text/html');
         $this->mailer->send($message);
 
         $response = new Response(json_encode(array('value' => "OK")));

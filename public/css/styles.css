@@ -98,3 +98,11 @@ a:hover .infoPlayerContent{
 .list-team svg{
     margin-right: 5px;
 }
+
+.giftTo{
+    display:none;
+}
+
+.hiddenResults{
+    display:none;
+}

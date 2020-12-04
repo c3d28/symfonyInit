@@ -79,6 +79,30 @@ class PCMController extends AbstractController
         ]);
     }
 
+    /**
+     * @Route("/teams/search", name="teams.search")
+     * @param EntityManagerInterface $em
+     * @param Request $request
+     * @return Response
+     */
+    public function searchTeam(Request $request): Response
+    {
+
+        $teams = $this->teamRepo->findAll();
+
+        $q = $request->query->get('q'); // use "term" instead of "q" for jquery-ui
+        $results = $this->getDoctrine()->getRepository('App:PcmTeams')->findBy([
+            'name' => $q
+        ]);
+
+        dump($results);
+
+        return $this->render('pcm/listTeam.html.twig', [
+            'results' => $results,
+            'teams' => $teams
+        ]);
+    }
+
 
     /**
      * @Route("/cyclists/{idPCMTeam}/", name="cyclists.idPCMTeam")
@@ -101,9 +125,41 @@ class PCMController extends AbstractController
         return $this->render('pcm/ficheTeam.html.twig', [
             'controller_name' => 'PCMController',
             'cyclists' => $cyclists,
-            'team' => $team,
+            'team' => $team
         ]);
     }
+
+    /**
+     * @return float
+     */
+    /*public function calculAVG($cyclist): float
+    {
+        //5 highest note without : descente - baroudeur - acceleration
+        $n = array(
+            //$cyclist->getCharcIPrologue(),
+            $cyclist->getCharacISprint(),
+            $cyclist->getCharacIPlain(),
+            $cyclist->getCharacITimetrial(),
+            $cyclist->getCharacIResistance(),
+            $cyclist->getCharacIRecuperation(),
+            $cyclist->getCharacIMountain(),
+            $cyclist->getCharacIHill(),
+            $cyclist->getCharacICobble(),
+            $cyclist->getCharacIEndurance()
+        );
+        rsort($n);
+
+        $top5 = array_slice($n, 0, 5);
+
+        dump($top5);
+        $avg =round(array_sum($top5)/count($top5));
+        dump($avg);
+
+        return $avg;
+
+    }*/
+
+
 
 
 

@@ -39,6 +39,11 @@ class User implements UserInterface, \Serializable
      */
     private $mail;
 
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $profilepcm;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -122,5 +127,17 @@ class User implements UserInterface, \Serializable
             ) = unserialize($string, ['allowed_classes' => false]);
         
         
+    }
+
+    public function getProfilepcm(): ?bool
+    {
+        return $this->profilepcm;
+    }
+
+    public function setProfilepcm(?bool $profilepcm): self
+    {
+        $this->profilepcm = $profilepcm;
+
+        return $this;
     }
 }
