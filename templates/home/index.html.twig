@@ -12,7 +12,8 @@
                 <div class="col-md-4">
                     <div  class="div-home-start card justify-content-center">
                         <div class="m-2">
-                            <h2>Créer un tirage</h2>
+                            <h2>Créer un tirage sécurisé </h2>
+                            <span>Tirage multi-utilisateur</span>
                             <div class="mt-12">
                                 <span class="btn-home-start mt-5">
                                     <a class="form-control btn btn-secondary" href="{{ path('draw.new') }}">Créer un tirage</a>
@@ -59,7 +60,7 @@
                             <h2>Créer un classement aléatoire</h2>
                             <div class="mt-12">
                                 <span class="btn-home-start mt-5">
-                                    <a class="form-control btn btn-secondary" href="{{ path('draw.rank') }}">Créer un </a>
+                                    <a class="form-control btn btn-secondary" href="{{ path('draw.rank') }}">Créer un random rank</a>
                                 </span>
                             </div>
                         </div>
@@ -85,11 +86,15 @@
                 <div class="col-md-4">
                     <div  class="div-home-start card justify-content-center">
                         <div class="m-2">
-
+                            <h2>Tirer pour chaque participant</h2>
+                            <div class="mt-12">
+                                <span class="btn-home-start mt-5">
+                                    <a class="form-control btn btn-secondary" href="{{ path('draw.oneForAll') }}"> 1 choix pour chaque participant</a>
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4"></div>
             </div>
         </section>
     {%  else %}

@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Create Draw{% endblock %}
+
+{% block body %}
+    <div class="container-fluid mt-5">
+
+        <h1>Création d'un tirage Au sort</h1>
+        <span> Chaque Option sera liée à une autre option</span>
+        {{ form_start(form) }}
+            {{ form_rest(form)}}
+            <div id="choice">
+                <label for="choice1">Choix 1 pour le tirage :</label>
+                <input type="text"  name="choices1" data-role="tagsinput">
+            </div>
+            <div id="choice">
+                <label for="choice2">Choix 2 pour le tirage :</label>
+                <input type="text"  name="choices2" data-role="tagsinput">
+            </div>
+
+        <button class="btn btn-primary mt-2"> Créer </button>
+        {{ form_end(form) }}
+
+
+    </div>
+
+{% endblock %}
+

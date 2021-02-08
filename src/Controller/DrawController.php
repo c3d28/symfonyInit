@@ -4,15 +4,20 @@ namespace App\Controller;
 
 
 use App\Entity\Choice;
+use App\Entity\ChoiceOFA1;
+use App\Entity\ChoiceOFA2;
 use App\Entity\ChoicePosition;
 
 use App\Entity\Draw;
 use App\Entity\InstagramContest;
 use App\Entity\Participant;
 use App\Entity\Rank;
+use App\Form\ChoiceOFAType;
 use App\Form\DrawType;
 use App\Form\InstagramType;
 use App\Form\RankType;
+use App\Repository\ChoiceOFA1Repository;
+use App\Repository\ChoiceOFA2Repository;
 use App\Repository\ChoiceRepository;
 use App\Repository\DrawRepository;
 use App\Repository\ParticipantRepository;
@@ -42,11 +47,13 @@ class DrawController extends AbstractController
      */
     private $em;
 
-    public function __construct(DrawRepository $repository, ParticipantRepository $repoParti, EntityManagerInterface $em, ChoiceRepository $repoChoice)
+    public function __construct(DrawRepository $repository, ParticipantRepository $repoParti, EntityManagerInterface $em, ChoiceRepository $repoChoice,ChoiceOFA1Repository $repoChoiceOFA1,ChoiceOFA2Repository $repoChoiceOFA2)
     {
         $this->repository = $repository;
         $this->repoParti = $repoParti;
         $this->repoChoice = $repoChoice;
+        $this->repoChoiceOFA1 = $repoChoiceOFA1;
+        $this->repoChoiceOFA2 = $repoChoiceOFA2;
 
         $this->em = $em;
     }
@@ -114,6 +121,15 @@ class DrawController extends AbstractController
             ['draw' => $draw]
         );
 
+        if($draw->getType() == "OFA"){
+            $choices1 = $this->repoChoiceOFA1->findBy(
+                ['draw' => $draw]
+            );
+            $choices2 = $this->repoChoiceOFA2->findBy(
+                ['draw' => $draw]
+            );
+        }
+
 
 
         $owner = false;
@@ -123,6 +139,16 @@ class DrawController extends AbstractController
                     $owner = true;
                 }
             }
+        }
+        if($draw->getType() == "OFA"){
+            return $this->render('draw/oneForAll/info.html.twig', [
+                'controller_name' => 'DrawController',
+                'draw' => $draw,
+                'participants' => $partipants,
+                'owner' => $owner,
+                'choices1' => $choices1,
+                'choices2' => $choices2
+            ]);
         }
 
         return $this->render('draw/info.html.twig', [
@@ -508,6 +534,81 @@ class DrawController extends AbstractController
 
 
     /**
+     * @Route("/draw/new/oneForAll", name="draw.oneForAll")
+     * @param EntityManagerInterface $em
+     * @param Draw $draw
+     * @param Request $request
+     * @return Response
+     */
+    public function newOneForAll(EntityManagerInterface $em, Request $request): Response
+    {
+
+        $draw = new Draw();
+        $form = $this->createForm(ChoiceOFAType::class, $draw);
+        $form->handleRequest($request);
+        $user = $this->getUser();
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $draw->setDateCreation(new \DateTime('now'));
+            $draw->setDateDraw(new \DateTime('2029-07-07 12:04:00'));
+
+
+            $draw->setShareCode(uniqid());
+            $draw->setFinished(false);
+            $draw->setType("OFA");
+            $this->em->persist($draw);
+            $this->em->flush();
+
+            // add new Participant
+            $participant = new Participant();
+            $participant->setOwner(true);
+            $participant->setSubscribed(true);
+            $participant->setUser($user);
+            $participant->setDraw($draw);
+            $em->persist($participant);
+            $em->flush();
+
+            if ($draw->getType() == "OFA") {
+                $choices1 = $request->get("choices1");
+                $choices_arr1 = explode(",", $choices1);
+
+                $choices2 = $request->get("choices2");
+                $choices_arr2 = explode(",", $choices2);
+
+                foreach ($choices_arr1 as $choiceString) {
+                    $choice = new ChoiceOFA1();
+                    $choice->setText($choiceString);
+                    $choice->setDraw($draw);
+                    $em->persist($choice);
+                    $em->flush();
+                }
+                foreach ($choices_arr2 as $choiceString) {
+                    $choice = new ChoiceOFA2();
+                    $choice->setText($choiceString);
+                    $choice->setDraw($draw);
+                    $em->persist($choice);
+                    $em->flush();
+                }
+            }
+            $this->addFlash('success', 'Tirage au sort créé ! ');
+
+
+            $response = $this->forward('App\Controller\MailController::sendEmail', [
+                'receiver' => 'c5dr9k@gmail.com',
+                'subject' => 'DraftBox - Tirage au sort OFA créé',
+                'text' => 'Votre tirage au sort a été créé avec pour id : '. $draw->getId()
+            ]);
+        }
+        return $this->render('draw/oneForAll/index.html.twig', [
+            'controller_name' => 'DrawController',
+            'form' => $form->createView()
+        ]);
+    }
+
+
+
+
+    /**
      * CheckAndExecutetheDraw
      * @param EntityManagerInterface $em
      * @param int $id
@@ -523,5 +624,71 @@ class DrawController extends AbstractController
         }
         return $this->render('admin/index.html.twig');
     }
+
+    /**
+     * @Route("/OFA/execute/{id}", name="ofa.execute")
+     * @param EntityManagerInterface $em
+     * @param int $int
+     * @param Request $request
+     * permite to start the draw
+     * @return Response
+     */
+    public function executeButtonOFA(EntityManagerInterface $em, int $id): Response
+    {
+        $this->executeOFA($em,$id);
+
+        return $this->redirectToRoute('draw.id', ['id' => $id]);
+
+    }
+
+
+    public function executeOFA(EntityManagerInterface $em , $id): EntityManagerInterface{
+
+        $choices1Free = $this->repoChoiceOFA1->findChoice1WithoutChoice2($id);
+        if($choices1Free == null){
+            // il n'y a plus de participant
+            $draw = $this->repository->findOneBy([
+                'id' => $id
+            ]);
+            $draw->setFinished(true);
+            $em->persist($draw);
+            $em->flush();
+            return $em;
+        }
+        $nextWin = $this->getNextWinner($choices1Free);
+        dump($nextWin);
+        $choices2Free = $this->repoChoiceOFA2->findChoice2WithoutChoice1($id);
+        $nextWin2 = $this->getNextWinner($choices2Free);
+        dump($nextWin2);
+
+        $choice1 = $this->repoChoiceOFA1->findOneBy([
+            'id' => $nextWin
+        ]);
+        $choice1->setChoiceOfa2($nextWin2);
+        $choice2=$this->repoChoiceOFA2->findOneBy([
+            'id' => $nextWin2
+        ]);
+        $choice2->setChoiceOfa1($nextWin);
+
+        $em->persist($choice1);
+        $em->persist($choice2);
+        $em->flush();
+
+
+
+        return $em;
+    }
+
+    /**
+     * @param $choices1Free
+     * @return mixed
+     */
+    public function getNextWinner($listChoice)
+    {
+        $rand_keys = array_rand($listChoice, 1);
+        $nextWin = $listChoice[$rand_keys];
+        return $nextWin;
+    }
+
 
 }

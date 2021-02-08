@@ -11,7 +11,7 @@
 
         <div class="col-md-4">
             <ul class="list-group list-team">
-                {% for team in teams %}
+                {% for team in teams | sort %}
                     <li class="list-group-item"><a href="{{path('cyclists.idPCMTeam',{idPCMTeam: team.IDTeam})}}">{{ team.name }}</a></li>
                 {% endfor %}
             </ul>
