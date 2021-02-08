@@ -656,10 +656,8 @@ class DrawController extends AbstractController
             return $em;
         }
         $nextWin = $this->getNextWinner($choices1Free);
-        dump($nextWin);
         $choices2Free = $this->repoChoiceOFA2->findChoice2WithoutChoice1($id);
         $nextWin2 = $this->getNextWinner($choices2Free);
-        dump($nextWin2);
 
         $choice1 = $this->repoChoiceOFA1->findOneBy([
             'id' => $nextWin
