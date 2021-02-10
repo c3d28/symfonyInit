@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Welcome!{% endblock %}</title>
+        {% block stylesheets %}
+            <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+            <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
+
+            <link rel="stylesheet" href="{{ asset('css/stylesRZ.css') }}">
+            <link rel="stylesheet" href="{{ asset('css/overwrite.css') }}">
+            <link rel="stylesheet" href="{{ asset('css/login-register.css') }}">
+            <link rel="stylesheet" href="{{ asset('css/tagsinput.css') }}">
+            <link rel="stylesheet" href="{{ asset('css/jquery.datetimepicker.min.css') }}">
+
+            <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+
+
+        {% endblock %}
+
+    </head>
+    <body>
+        <header>
+            <!-- Navigation -->
+            <nav class="navbar navbar-expand-lg navbar-light">
+                <div class="container">
+                    <a class="navbar-brand" href="{{ path('home') }}"><img src="{{ asset('images/logo.png') }}" /></a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarResponsive">
+                        <ul class="navbar-nav ml-auto">
+                            <li class="nav-item active">
+                                <a class="nav-link" href="{{ path('home') }}">Home
+                                    <span class="sr-only">(current)</span>
+                                </a>
+                            </li>
+                            {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ path('draws') }}">Mes draws</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ path('ranks') }}">Mes classements</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ path('instagramContests') }}">Mes InstagramContests</a>
+                                </li>
+                                <!--
+                                <li class="nav-item">
+                                    <button type="button" class="btn btn-light">
+                                        <i class="icon-bell"></i> <span class="badge badge-danger">0</span>
+                                    </button>
+
+                                </li> -->
+                            {% endif %}
+
+                            {% if app.user %}
+
+                            <div>
+                                <ul class="nav navbar-nav">
+                                    <li class="dropdown">
+                                        <a href="#" class="nav-link dropdown-toggle" id="navbarDropdown" data-toggle="dropdown" aria-expanded="false">
+                                            Welcome,{%  if app.user.username is defined  %} {{ app.user.username}} {% endif %} <b class="caret"></b>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-right position-absolute" aria-labelledby="navbarDropdown">
+                                            <a class="dropdown-item" href="#">Profile</a>
+                                                {% if is_granted('ROLE_ADMIN') %}
+                                                    <a class="dropdown-item" href="{{ path('admin.user.index') }}">Panneau admin</a>
+                                                {% endif %}
+                                            <div class="dropdown-divider"></div>
+
+                                                <a class="dropdown-item" href="{{ path('app_logout') }}"><i class="icon-off mr-2 "></i>Se déconnecter</a>
+
+                                                <!-- <a class="nav-link" href="{{ path('login') }}">Se Connecter</a> -->
+                                        </div>
+
+                                    </li>
+                                </ul>
+                            </div>
+                            {% else %}
+                                <li class="nav-item">
+                                    <a class="nav-link" onclick="openLoginModal()"><i class="icon-on mr-2 "></i> Se Connecter</a>
+                                </li>
+                            {% endif %}
+
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        {% block body %}
+        {% endblock %}
+
+    <div class="modal fade login" id="loginModal">
+        <div class="modal-dialog login animated">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Login with</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+
+                </div>
+                <div class="modal-body">
+                    <div class="box">
+                        <div class="content">
+                            <!-- TODO
+
+                            <div class="social">
+                                <a class="circle github" href="#">
+                                    <i class="fa fa-github fa-fw"></i>
+                                </a>
+                                <a id="google_login" class="circle google" href="#">
+                                    <i class="fa fa-google-plus fa-fw"></i>
+                                </a>
+                                <a id="facebook_login" class="circle facebook" href="#">
+                                    <i class="fa fa-facebook fa-fw"></i>
+                                </a>
+                            </div>
+                            <div class="division">
+                                <div class="line l"></div>
+                                <span>or</span>
+                                <div class="line r"></div>
+                            </div>
+                            <!-->
+                            <div class="error"></div>
+                            <div class="form loginBox">
+                                <form method="post" action="{{path('app_login')}}" accept-charset="UTF-8">
+                                    <input id="inputUsername" class="form-control" type="text" placeholder="Username" name="username">
+                                    <input id="inputPassword" class="form-control" type="password" placeholder="Password" name="password">
+                                    <input type="hidden" name="_csrf_token"
+                                           value="{{ csrf_token('authenticate') }}"
+                                    >
+                                    <input class="btn btn-default btn-login" type="submit">
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box">
+                        <div class="content registerBox" style="display:none;">
+                            <div class="form">
+                                <form method="POST" name="register"  data-remote="true" action="{{path('app_register')}}" accept-charset="UTF-8">
+                                    <input id="username" onkeyup="checkUsername()" pattern="^[a-z0-9]{3,15}$" class="form-control" type="text" placeholder="Username" name="username">
+                                    <input id="mail" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" required class="form-control" type="text" placeholder="Email" name="mail">
+                                    <input id="password" class="form-control" type="password" placeholder="Password" name="password">
+                                    <input id="password_confirmation" onkeyup="checkPassword()" class="form-control" type="password" placeholder="Repeat Password" name="password_confirmation">
+                                    <input type="hidden" id="register__token" name="register[_token]" value="{{ csrf_token('register') }}">
+                                    <input class="btn btn-default btn-register" type="submit" name="commit">
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="forgot login-footer">
+                                <span>Looking to
+                                     <a href="javascript: showRegisterForm();">create an account</a>
+                                ?</span>
+                    </div>
+                    <div class="forgot register-footer" style="display:none">
+                        <span>Already have an account?</span>
+                        <a href="javascript: showLoginForm();">Login</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+        <!-- Top Flash alert -->
+        {% for message in app.flashes('success') %}
+
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {% endfor %}
+
+
+
+        {% block javascripts %}
+            <link href="https://fonts.googleapis.com/css?family=Quicksand:300,500" rel="stylesheet">
+            <script src="https://code.jquery.com/jquery-3.4.1.min.js" ></script>
+            <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+            <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+            <script src="{{ asset('js/login-register.js') }}" type="text/javascript"></script>
+            <script src="{{ asset('js/tagsinput.js') }}" type="text/javascript"></script>
+            <script src="{{ asset('js/jquery.datetimepicker.full.min.js') }}" type="text/javascript"></script>
+            <script src="{{ asset('js/create_draw.js') }}" type="text/javascript"></script>
+            <script src="{{ asset('js/pcm.js') }}" type="text/javascript"></script>
+            <script src="{{ asset('js/christmas.js') }}" type="text/javascript"></script>
+
+        {% endblock %}
+    </body>
+</html>

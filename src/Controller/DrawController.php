@@ -117,6 +117,7 @@ class DrawController extends AbstractController
             ['draw' => $draw]
         );
 
+
         $choices = $this->repoChoice->findBy(
             ['draw' => $draw]
         );
@@ -141,6 +142,19 @@ class DrawController extends AbstractController
             }
         }
         if($draw->getType() == "OFA"){
+            $listAuthorized = array("Robin","c3d28");
+
+            if(in_array($partipants[0]->getUser()->getUsername(),$listAuthorized)){
+                return $this->render('draw/oneForAll/infoRhezon.html.twig', [
+                    'controller_name' => 'DrawController',
+                    'draw' => $draw,
+                    'participants' => $partipants,
+                    'owner' => $owner,
+                    'choices1' => $choices1,
+                    'choices2' => $choices2
+                ]);
+            }
+
             return $this->render('draw/oneForAll/info.html.twig', [
                 'controller_name' => 'DrawController',
                 'draw' => $draw,
@@ -149,6 +163,8 @@ class DrawController extends AbstractController
                 'choices1' => $choices1,
                 'choices2' => $choices2
             ]);
+
+
         }
 
         return $this->render('draw/info.html.twig', [

@@ -1,0 +1,77 @@
+{% extends 'base2.html.twig' %}
+
+
+{% block title %}Draw {{ draw.id }}{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+
+
+        <div class="row">
+            <div class="top-content">
+                <h1 class="m-5">
+                    <img class="rounded-circle" src="https://static-cdn.jtvnw.net/jtv_user_pictures/9bfb9fdd-44ec-4b27-aa42-4ab76404dba7-profile_image-70x70.png"><span class="ml-5">{{ draw.name }}</span>
+                </h1>
+                <div class="color-overlay"></div>
+            </div>
+        </div>
+
+
+        <div class="row global-panel mt-5">
+            <div class="container">
+                <div class="row mt-2">
+
+                    <div class="col-lg-6">
+                        <h2>Créateur </h2>
+
+                        <ul class="list-group">
+
+                            {% for parti in participants %}
+                                <tr>
+                                    <li class="list-group-item"> {{ parti.user.username}} </li>
+                                </tr>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+
+
+                <div class="row mt-2">
+                    <div class="col-lg-6">
+                        <h2>Liste des participants</h2>
+                        <div class="">
+                            <ul class="list-group">
+
+                                {% for choice in choices1 %}
+                                    <tr>
+                                        <li class="list-group-item"> {{ choice.text}}  {%  if choice.ChoiceOfa2  %} - {{ choice.ChoiceOfa2.text }}  {% endif %}  </li>
+                                    </tr>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <h2>Liste des équipes </h2>
+                        <div class="">
+                            <ul class="list-group">
+
+                                {% for choice in choices2 %}
+                                    <tr>
+                                        <li class="list-group-item "> {%  if choice.ChoiceOfa1%} <del>{{ choice.text}}</del> {% else %} {{ choice.text}} {% endif %}  </li>
+                                    </tr>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+
+
+            {% if draw.finished == false and owner is defined and owner %}<a class="mt-5 btn btn-primary buttonOK" href="{{ path ('ofa.execute', {'id' : draw.id})}}">Exécuter le tirage</a>{% endif  %}
+
+            </div>
+        </div>
+
+
+    </div>
+{% endblock %}
