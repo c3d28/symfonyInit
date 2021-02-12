@@ -44,21 +44,28 @@
 
                                 {% for choice in choices1 %}
                                     <tr>
-                                        <li class="list-group-item"> {{ choice.text}}  {%  if choice.ChoiceOfa2  %} - {{ choice.ChoiceOfa2.text }}  {% endif %}  </li>
+                                        <li class="list-group-item">
+                                            <div class="row">
+                                                <div class="col-lg-6">{{ choice.text}}</div>
+                                                <div class="col-lg-6 right associated">{%  if choice.ChoiceOfa2  %}  {{ choice.ChoiceOfa2.text }} {% else %} - {% endif %}</div>
+                                            </div>
+
                                     </tr>
                                 {% endfor %}
                             </ul>
                         </div>
                     </div>
                     <div class="col-lg-6">
-                        <h2>Liste des équipes </h2>
+                        <h2>Liste des équipes restantes </h2>
                         <div class="">
                             <ul class="list-group">
 
                                 {% for choice in choices2 %}
-                                    <tr>
-                                        <li class="list-group-item "> {%  if choice.ChoiceOfa1%} <del>{{ choice.text}}</del> {% else %} {{ choice.text}} {% endif %}  </li>
-                                    </tr>
+                                    {% if choice.ChoiceOfa1 is null %}
+                                        <tr>
+                                            <li class="list-group-item ">{{ choice.text}}   </li>
+                                        </tr>
+                                    {% endif %}
                                 {% endfor %}
                             </ul>
                         </div>

@@ -153,5 +153,15 @@ h1 {
     background-color: #86a5a9;
     padding:10px;
     color:#767676;
-
 }
+
+.associated{
+    background-color: grey;
+    border-radius:15px;
+    border: 1px #fff solid;
+    padding:3px;
+    color:white;
+    text-align: center;
+}
+
+
